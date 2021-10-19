@@ -1,8 +1,6 @@
 <?php namespace Farzai\ThaiPost\Support;
 
 use ArrayAccess;
-use Illuminate\Support\Collection;
-use Illuminate\Support\Enumerable;
 
 class Arr
 {

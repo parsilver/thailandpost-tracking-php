@@ -1,27 +1,64 @@
-<?php namespace Farzai\ThaiPost\Requests;
+<?php
 
-use Farzai\ThaiPost\Responses\Response;
-use Psr\Http\Message\ResponseInterface;
+namespace Farzai\ThaiPost\Requests;
 
-interface Request
+use Psr\Http\Message\RequestInterface as MessageRequestInterface;
+use GuzzleHttp\Psr7\Request as GuzzleHttpRequest;
+
+class Request implements RequestInterface
 {
     /**
-     * @return string|bool
+     * @var string
      */
-    public function method($name = null);
+    protected $method = 'GET';
 
     /**
-     * @return string
+     * @var string
      */
-    public function uri();
+    protected $path = '';
 
     /**
-     * @return array
+     * @var array
      */
-    public function payload();
+    protected $headers = [];
 
     /**
-     * @return array
+     * @var array
      */
-    public function headers();
+    protected $queryParams = [];
+
+    /**
+     * @var mixed
+     */
+    protected $body;
+
+    /**
+     * Returns a PSR-7 request
+     */
+    public function getRequest(): MessageRequestInterface
+    {
+        $path = $this->path;
+        if (! empty($this->queryParams)) {
+            $path .= '?' . http_build_query($this->queryParams);
+        }
+
+        return new GuzzleHttpRequest(
+            $this->method,
+            $path,
+            $this->headers,
+            $this->body,
+        );
+    }
+
+    /**
+     * @param string $name
+     * @param string $value
+     * @return $this
+     */
+    public function setHeader(string $name, string $value)
+    {
+        $this->headers[$name] = $value;
+
+        return $this;
+    }
 }
