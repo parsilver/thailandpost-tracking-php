@@ -4,10 +4,13 @@
     "license": "MIT",
     "authors": [
         {
-            "name": "parsilver",
-            "email": "magician_canobi@hotmail.com"
+            "name": "PA",
+            "role": "DevOps"
         }
     ],
+    "config": {
+        "sort-packages": true
+    },
     "minimum-stability": "stable",
     "prefer-stable": true,
     "require": {

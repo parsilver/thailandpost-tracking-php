@@ -59,12 +59,12 @@ class GetItemsByBarcode extends Request
 
 
     /**
-     * @param string $status
+     * @param string|numeric $status
      * @return $this
      */
-    public function setStatus(string $status)
+    public function setStatus($status)
     {
-        $this->status = $status;
+        $this->status = (string)$status;
 
         return $this;
     }
