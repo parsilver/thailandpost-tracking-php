@@ -28,10 +28,23 @@ class Client
     /**
      * @return ClientInterface
      */
-    public function getHttpClient(): ClientInterface
+    public function restApi(): ClientInterface
     {
         return new GuzzleHttp([
             'base_uri' => 'https://trackapi.thailandpost.co.th',
+            'headers' => [
+                'accept' => 'application/json',
+            ],
+        ]);
+    }
+
+    /**
+     * @return ClientInterface
+     */
+    public function webhook(): ClientInterface
+    {
+        return new GuzzleHttp([
+            'base_uri' => 'https://trackwebhook.thailandpost.co.th',
             'headers' => [
                 'accept' => 'application/json',
             ],

@@ -1,9 +1,9 @@
 <?php
 
-namespace Farzai\ThaiPost\Requests;
+namespace Farzai\ThaiPost\RestApi\Requests;
 
+use Farzai\ThaiPost\Request;
 use Psr\Http\Message\RequestInterface as MessageRequestInterface;
-
 
 class GetItemsByBarcode extends Request
 {

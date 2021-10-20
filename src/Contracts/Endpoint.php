@@ -1,10 +1,10 @@
 <?php
 
-namespace Farzai\ThaiPost\Endpoints;
+namespace Farzai\ThaiPost\Contracts;
 
 use Farzai\ThaiPost\Transporter;
 
-interface EndpointInterface
+interface Endpoint
 {
     /**
      * @return Transporter

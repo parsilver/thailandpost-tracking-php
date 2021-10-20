@@ -1,6 +1,8 @@
 <?php
 
-namespace Farzai\ThaiPost\Requests;
+namespace Farzai\ThaiPost\RestApi\Requests;
+
+use Farzai\ThaiPost\Request;
 
 class GetToken extends Request
 {
@@ -11,7 +13,8 @@ class GetToken extends Request
     {
         $this->method = 'POST';
         $this->path = '/post/api/v1/authenticate/token';
-        $this->headers['Authorization'] = "Token {$apiKey}";
-        $this->headers['Content-Type'] = 'application/json';
+
+        $this->setHeader('Authorization', "Token {$apiKey}");
+        $this->setHeader('Content-Type', "application/json");
     }
 }

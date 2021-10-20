@@ -18,12 +18,13 @@ PHP Library สำหรับ tracking พัสดุของไปรษณ�
 composer require farzai/thailand-post
 ```
 
-### เริ่มต้นใช้งานเบื้องต้น
+## REST APIs
+### เริ่มต้นใช้งาน
 
 ```php
-use Farzai\ThaiPost\Endpoints\Api;
 use Farzai\ThaiPost\Client;
-use Farzai\ThaiPost\Requests;
+use Farzai\ThaiPost\RestApi\Endpoint;
+use Farzai\ThaiPost\RestApi\Requests;
 
 // ตั้งค่า
 $client = new Client([
@@ -32,7 +33,7 @@ $client = new Client([
 ]);
 
 // ตัวเชื่อมต่อ api
-$api = new Api($client);
+$api = new Endpoint($client);
 
 // สร้างคำร้องขอเรื่อง ดึงสถานะของ barcode 
 $request = new Requests\GetItemsByBarcode(
@@ -54,12 +55,14 @@ $response = $api->getItemsByBarcode($request)
 
 // ตรวจสอบว่าทำงานถูกต้องหรือไม่
 if ($response->isOk()) {
+
     // คุณสามารถนำ json response มาใช้งานได้จากคำสั่งด้านล่างได้เลย
-    $response->json(); // array
+    // @return array
+    $response->json();
     
     // หรือ ต้องการเข้าไปยัง path ของ json 
     // สามารถใส่ parameter เข้าไปได้เลย
-    $response->json('message'); // 
+    $response->json('message');
     
     // ในกรณีที่ลึกไปอีก 2 ชั้น
     $response->json('response.track_count.count_number');
@@ -76,47 +79,50 @@ GET: https://trackapi.thailandpost.co.th/post/api/v1/authenticate/token
 ```
 
 
-ท่านสามารถเปลี่ยนวิธีการเก็บ token ได้เองโดยการ implement `TokenStoreInterface`
+ท่านสามารถเปลี่ยนวิธีการเก็บ token ได้เองโดยการ implement `TokenStore`
 ```php
-use Farzai\ThaiPost\Auth\TokenStoreInterface
+use Farzai\ThaiPost\Contracts\TokenStore
 ```
 
 ยกตัวอย่าง เช่น
+
 ```php
 namespace App;
 
-use Farzai\ThaiPost\Auth\TokenStoreInterface;
+use Farzai\ThaiPost\Contracts\TokenStore;
+use Farzai\ThaiPost\Entity\TokenEntity;
 
-class CustomStore implements TokenStoreInterface
+class CustomStore implements TokenStore
 {
     /**
-     * Save token
-     * 
-     * @param string $token
+     * @param TokenEntity $token
+     * @return mixed
      */
-    public function store(string $token)
+    public function save(TokenEntity $token)
     {
-        // Save token here...
+        file_put_contents("token.txt", json_encode($token));
     }
 
     /**
-     * Get token
-     *
-     * @return string
+     * @return TokenEntity|null
      */
     public function get()
     {
-        // Retrieve token
+        $json = @json_decode(file_get_contents("token.txt"), true);
         
-        return '';
+        if ($json) {
+            return TokenEntity::
+        }
     }
 
     /**
-     * @return string
+     * Check token has stored
+     *
+     * @return bool
      */
-    public function __toString()
+    public function has()
     {
-        return $this->get();
+        return file_get_contents("token.txt") !== false;
     }
 }
 
@@ -125,7 +131,7 @@ class CustomStore implements TokenStoreInterface
 เมื่อเรียกใช้งาน
 
 ```php
-use Farzai\ThaiPost\Endpoints\Api;
+use Farzai\ThaiPost\RestApi\Endpoint;
 use Farzai\ThaiPost\Client;
 use App\CustomStore;
 
@@ -134,7 +140,59 @@ $client = new Client([
 ]);
 
 // เพิ่ม CustomStore ไปยัง Endpoint
-$api = new Api($client, new CustomStore);
+$api = new Endpoint($client);
+
+$api->setTokenStore(new CustomStore)
 
 // Make request....
+```
+
+
+
+## Webhook APIs
+### เริ่มต้นใช้งาน
+
+```php
+use Farzai\ThaiPost\Client;
+use Farzai\ThaiPost\Webhook\Endpoint;
+use Farzai\ThaiPost\Webhook\Requests;
+
+// ตั้งค่า
+$client = new Client([
+    // API Key ที่ได้มาจากการ generate ผ่านหน้าเว็บของไปรษณีย์ไทย
+    'api_key' => 'xxxxxxxx'
+]);
+
+// ตัวเชื่อมต่อ api
+$api = new Endpoint($client);
+
+// สร้างคำร้องขอเรื่อง ดึงสถานะของ barcode 
+$request = new Requests\SubscribeByBarcode(
+    $barcodes = ['EY145587896TH', 'RC338848854TH']
+);
+
+// (optional) หากต้องการตั้งค่าภาษา
+$request->setLanguage("TH");
+
+// (optional) ตั้งค่ากรองสถานะ
+$request->setStatus("all");
+
+// (optional) ต้องการข้อมูลการติดตามสถานะสิ่งของ
+$request->withPreviousStatus();
+
+// ท่านสามารถดูรายละเอียด parameter ต่างๆได้จากที่นี่
+// https://track.thailandpost.co.th/developerGuide
+
+// เมื่อเรียกคำสั่งด้านล่าง จะเสมือนเรียก api ตามตัวอย่างนี้
+// POST: https://trackwebhook.thailandpost.co.th/post/api/v1/hook
+$response = $api->getItemsByBarcode($request)
+
+// ตรวจสอบว่าทำงานถูกต้องหรือไม่
+if ($response->isOk()) {
+
+    // คุณสามารถนำ json response มาใช้งานได้จากคำสั่งด้านล่างได้เลย
+    // @return array
+    $response->json();
+}
+
 ```

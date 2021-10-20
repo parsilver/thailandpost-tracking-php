@@ -1,11 +1,12 @@
 <?php
 
-namespace Farzai\ThaiPost\Requests;
+namespace Farzai\ThaiPost;
 
+use Farzai\ThaiPost\Contracts\Request as RequestContract;
 use Psr\Http\Message\RequestInterface as MessageRequestInterface;
 use GuzzleHttp\Psr7\Request as GuzzleHttpRequest;
 
-class Request implements RequestInterface
+class Request implements RequestContract
 {
     /**
      * @var string

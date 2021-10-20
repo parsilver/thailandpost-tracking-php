@@ -1,10 +1,10 @@
 <?php
 
-namespace Farzai\ThaiPost\Requests;
+namespace Farzai\ThaiPost\Contracts;
 
 use Psr\Http\Message\RequestInterface as MessageRequestInterface;
 
-interface RequestInterface
+interface Request
 {
     /**
      * @return MessageRequestInterface

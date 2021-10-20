@@ -1,4 +1,6 @@
-<?php namespace Farzai\ThaiPost\Entity;
+<?php namespace Farzai\ThaiPost\RestApi\Entity;
+
+use Farzai\ThaiPost\Entity\AbstractEntity;
 
 /**
  * Class CodeEntity
@@ -17,7 +19,7 @@
  * @property-read string|null message
  * @property-read string|null receiver_name
  */
-class CodeEntity extends Entity
+class CodeEntity extends AbstractEntity
 {
     //
 }
