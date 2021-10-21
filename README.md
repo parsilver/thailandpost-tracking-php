@@ -13,13 +13,15 @@ PHP Library สำหรับ tracking พัสดุของไปรษณ�
 }
 ```
 
-### ติดตั้ง
+### ติดตั้งผ่าน Composer
 ```
 composer require farzai/thailand-post
 ```
 
-## REST APIs
-### เริ่มต้นใช้งาน
+---
+
+## เริ่มต้นใช้งาน
+### ส่วนของ REST APIs
 
 ```php
 use Farzai\ThaiPost\Client;
@@ -70,87 +72,9 @@ if ($response->isOk()) {
 
 ```
 
+---
 
-### การตั้งค่า
-
-เนื่องจากโดยปกติแล้ว library ตัวนี้จะใช้ session ในการเก็บ token ที่ได้จากการเรียก api
-```
-GET: https://trackapi.thailandpost.co.th/post/api/v1/authenticate/token
-```
-
-
-ท่านสามารถเปลี่ยนวิธีการเก็บ token ได้เองโดยการ implement `TokenStore`
-```php
-use Farzai\ThaiPost\Contracts\TokenStore
-```
-
-ยกตัวอย่าง เช่น
-
-```php
-namespace App;
-
-use Farzai\ThaiPost\Contracts\TokenStore;
-use Farzai\ThaiPost\Entity\TokenEntity;
-
-class CustomStore implements TokenStore
-{
-    /**
-     * @param TokenEntity $token
-     * @return mixed
-     */
-    public function save(TokenEntity $token)
-    {
-        file_put_contents("token.txt", json_encode($token));
-    }
-
-    /**
-     * @return TokenEntity|null
-     */
-    public function get()
-    {
-        $json = @json_decode(file_get_contents("token.txt"), true);
-        
-        if ($json) {
-            return TokenEntity::
-        }
-    }
-
-    /**
-     * Check token has stored
-     *
-     * @return bool
-     */
-    public function has()
-    {
-        return file_get_contents("token.txt") !== false;
-    }
-}
-
-```
-
-เมื่อเรียกใช้งาน
-
-```php
-use Farzai\ThaiPost\RestApi\Endpoint;
-use Farzai\ThaiPost\Client;
-use App\CustomStore;
-
-$client = new Client([
-    'api_key' => 'xxxxxxxx'
-]);
-
-// เพิ่ม CustomStore ไปยัง Endpoint
-$api = new Endpoint($client);
-
-$api->setTokenStore(new CustomStore)
-
-// Make request....
-```
-
-
-
-## Webhook APIs
-### เริ่มต้นใช้งาน
+### ส่วนของ Webhook APIs
 
 ```php
 use Farzai\ThaiPost\Client;
@@ -195,4 +119,83 @@ if ($response->isOk()) {
     $response->json();
 }
 
+```
+
+
+---
+
+### การตั้งค่า
+
+เนื่องจาก library ตัวนี้จะใช้ session ในการเก็บ token ที่ได้จากการเรียก api
+```
+GET: https://trackapi.thailandpost.co.th/post/api/v1/authenticate/token
+```
+
+
+ท่านสามารถเปลี่ยนวิธีการเก็บ token ได้เองโดยการ implement `TokenStore`
+```php
+use Farzai\ThaiPost\Contracts\TokenStore
+```
+
+ยกตัวอย่าง เช่น
+
+```php
+namespace App;
+
+use Farzai\ThaiPost\Contracts\TokenStore;
+use Farzai\ThaiPost\Entity\TokenEntity;
+
+class CustomStore implements TokenStore
+{
+    /**
+     * @param TokenEntity $token
+     * @return mixed
+     */
+    public function save(TokenEntity $token)
+    {
+        file_put_contents("token.txt", json_encode($token));
+    }
+
+    /**
+     * @return TokenEntity|null
+     */
+    public function get()
+    {
+        $json = @json_decode(file_get_contents("token.txt"), true);
+        
+        if ($json) {
+            return TokenEntity::fromArray($json);
+        }
+    }
+
+    /**
+     * Check token has stored
+     *
+     * @return bool
+     */
+    public function has()
+    {
+        return file_get_contents("token.txt") !== false;
+    }
+}
+
+```
+
+เมื่อเรียกใช้งาน
+
+```php
+use Farzai\ThaiPost\RestApi\Endpoint;
+use Farzai\ThaiPost\Client;
+use App\CustomStore;
+
+$client = new Client([
+    'api_key' => 'xxxxxxxx'
+]);
+
+// เพิ่ม CustomStore ไปยัง Endpoint
+$api = new Endpoint($client);
+
+$api->setTokenStore(new CustomStore)
+
+// Make request....
 ```
