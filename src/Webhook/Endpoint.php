@@ -8,25 +8,13 @@ use Farzai\ThaiPost\Client;
 use Farzai\ThaiPost\Entity\TokenEntity;
 use Farzai\ThaiPost\Response\Response;
 use Farzai\ThaiPost\Response\ResponseInterface;
-use Farzai\ThaiPost\Webhook\Auth\SessionToken;
 
 class Endpoint extends AbstractEndpoint
 {
 
     /**
-     * @param Client $client
-     */
-    public function __construct(Client $client)
-    {
-        parent::__construct($client);
-
-        $this->setTokenStore(new SessionToken());
-    }
-
-    /**
      * @param Requests\GetToken $request
      * @return ResponseInterface
-     * @throws \Psr\Http\Client\ClientExceptionInterface
      */
     public function getAuthToken(Requests\GetToken $request): ResponseInterface
     {
@@ -36,6 +24,7 @@ class Endpoint extends AbstractEndpoint
     /**
      * @param Requests\SubscribeByBarcode $request
      * @return ResponseInterface
+     * @throws \Farzai\ThaiPost\Exception\InvalidApiTokenException
      * @throws \Psr\Http\Client\ClientExceptionInterface
      */
     public function subscribeByBarcode(Requests\SubscribeByBarcode $request): ResponseInterface
@@ -47,16 +36,15 @@ class Endpoint extends AbstractEndpoint
 
     /**
      * @param Client $client
-     * @return TokenEntity
-     * @throws \Psr\Http\Client\ClientExceptionInterface
+     * @return TokenEntity|null
      */
-    protected function fetchToken(Client $client): TokenEntity
+    protected function fetchToken(Client $client)
     {
         $tokenResponse = $this->getAuthToken(new Requests\GetToken($client->getConfig('api_key')));
 
-        return TokenEntity::fromArray(
-            $tokenResponse->json()
-        );
+        if ($tokenResponse->isOk()) {
+            return TokenEntity::fromArray($tokenResponse->json());
+        }
     }
 
     /**

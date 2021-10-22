@@ -15,6 +15,7 @@ class TokenEntity extends AbstractEntity
      */
     public function isExpired()
     {
-        return DateTime::parseFromAPI($this->expire)->isPast();
+        return ! $this->expire
+            || DateTime::parseFromAPI($this->expire)->isPast();
     }
 }

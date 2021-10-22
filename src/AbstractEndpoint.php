@@ -5,6 +5,7 @@ namespace Farzai\ThaiPost;
 use Farzai\ThaiPost\Contracts\TokenStore;
 use Farzai\ThaiPost\Contracts\Endpoint as EndpointContract;
 use Farzai\ThaiPost\Entity\TokenEntity;
+use Farzai\ThaiPost\Exception\InvalidApiTokenException;
 use Psr\Http\Client\ClientInterface;
 
 abstract class AbstractEndpoint implements EndpointContract
@@ -32,10 +33,9 @@ abstract class AbstractEndpoint implements EndpointContract
 
     /**
      * @param Client $client
-     * @return TokenEntity
-     * @throws \Psr\Http\Client\ClientExceptionInterface
+     * @return TokenEntity|null
      */
-    abstract protected function fetchToken(Client $client): TokenEntity;
+    abstract protected function fetchToken(Client $client);
 
     /**
      * @param Client $client
@@ -44,6 +44,8 @@ abstract class AbstractEndpoint implements EndpointContract
     {
         $this->client = $client;
         $this->httpClient = $this->getHttpClient($client);
+
+        $this->setTokenStore($this->getDefaultTokenStore());
     }
 
     /**
@@ -64,10 +66,10 @@ abstract class AbstractEndpoint implements EndpointContract
     {
         $transporter = new Transporter($this->httpClient);
 
-        if ($this->tokenStore->has()) {
+        if ($this->isTokenValid()) {
             $token = $this->tokenStore->get()->token;
 
-            $transporter->setHeader('Authorization', "{$this->getTokenType()} {$token}");
+            $transporter->setHeader('Authorization', "Token {$token}");
         }
 
         return $transporter;
@@ -78,24 +80,61 @@ abstract class AbstractEndpoint implements EndpointContract
      * @param Request $request
      * @param callable $handler
      * @return mixed
-     * @throws \Psr\Http\Client\ClientExceptionInterface
+     * @throws InvalidApiTokenException
      */
     protected function handleWithAuthorization(Request $request, callable $handler)
     {
+        // If don't have token
+        // Setup auth token before request
+        if (! $this->isTokenValid()) {
+            $this->fetchAndUpdateToken();
+        }
+
         $response = $handler($request);
 
+        // Fetch new token if invalid token
         if ($response->getResponse()->getStatusCode() === 403) {
-            $this->tokenStore->save($this->fetchToken($this->client));
+            $this->fetchAndUpdateToken();
         }
 
         return $handler($request);
     }
 
     /**
-     * @return string
+     * @return TokenStore
      */
-    protected function getTokenType()
+    protected function getDefaultTokenStore()
     {
-        return 'Token';
+        return new MemoryTokenStore;
+    }
+
+    /**
+     * Check token
+     *
+     * @return bool
+     */
+    protected function isTokenValid()
+    {
+        if ($this->tokenStore->has()) {
+            $token = $this->tokenStore->get();
+
+            return $token && !$token->isExpired();
+        }
+
+        return false;
+    }
+
+    /**
+     * @throws InvalidApiTokenException
+     */
+    private function fetchAndUpdateToken()
+    {
+        $token = $this->fetchToken($this->client);
+
+        if (! $token) {
+            throw new InvalidApiTokenException();
+        }
+
+        $this->tokenStore->save($token);
     }
 }

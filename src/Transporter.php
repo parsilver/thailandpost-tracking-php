@@ -51,7 +51,6 @@ class Transporter implements ClientInterface
     /**
      * @param RequestInterface $request
      * @return ResponseInterface
-     * @throws ClientExceptionInterface
      */
     public function sendRequest(RequestInterface $request): ResponseInterface
     {

@@ -4,7 +4,6 @@ namespace Farzai\ThaiPost\RestApi;
 
 use Farzai\ThaiPost\AbstractEndpoint;
 use Farzai\ThaiPost\Client;
-use Farzai\ThaiPost\RestApi\Auth\SessionToken;
 use Farzai\ThaiPost\Entity\TokenEntity;
 use Farzai\ThaiPost\Response\Response;
 use Farzai\ThaiPost\Response\ResponseInterface;
@@ -13,16 +12,6 @@ use Psr\Http\Client\ClientInterface;
 
 class Endpoint extends AbstractEndpoint
 {
-    /**
-     * @param Client $client
-     */
-    public function __construct(Client $client)
-    {
-        parent::__construct($client);
-
-        $this->setTokenStore(new SessionToken());
-    }
-
     /**
      * @param Requests\GetToken $request
      * @return ResponseInterface
@@ -56,15 +45,15 @@ class Endpoint extends AbstractEndpoint
 
     /**
      * @param Client $client
-     * @return TokenEntity
+     * @return TokenEntity|null
      * @throws \Psr\Http\Client\ClientExceptionInterface
      */
-    protected function fetchToken(Client $client): TokenEntity
+    protected function fetchToken(Client $client)
     {
         $tokenResponse = $this->getAuthToken(new Requests\GetToken($client->getConfig('api_key')));
 
-        return TokenEntity::fromArray(
-            $tokenResponse->json()
-        );
+        if ($tokenResponse->isOk()) {
+            return TokenEntity::fromArray($tokenResponse->json());
+        }
     }
 }

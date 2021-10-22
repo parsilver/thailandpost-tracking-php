@@ -1,6 +1,7 @@
 <?php namespace Farzai\ThaiPost\Entity;
 
 use JsonSerializable;
+use Psr\Http\Message\ServerRequestInterface;
 
 abstract class AbstractEntity implements JsonSerializable
 {
@@ -20,6 +21,15 @@ abstract class AbstractEntity implements JsonSerializable
     }
 
     /**
+     * @param ServerRequestInterface $request
+     * @return static
+     */
+    public static function fromRequest(ServerRequestInterface $request)
+    {
+        return static::fromArray(@json_decode((string)$request->getBody(), true) ?: []);
+    }
+
+    /**
      * @param array $data
      */
     public function __construct(array $data = [])
@@ -32,7 +42,7 @@ abstract class AbstractEntity implements JsonSerializable
      */
     public function asJson()
     {
-        return json_encode($this->jsonSerialize());
+        return json_encode($this);
     }
 
     /**
@@ -71,5 +81,13 @@ abstract class AbstractEntity implements JsonSerializable
     public function __set($name, $value)
     {
         $this->data[$name] = $value;
+    }
+
+    /**
+     * @return string
+     */
+    public function __toString()
+    {
+        return $this->asJson();
     }
 }

@@ -1,17 +1,17 @@
 <?php
 
-namespace Farzai\ThaiPost\RestApi\Auth;
+namespace Farzai\ThaiPost;
 
 use Farzai\ThaiPost\Contracts\TokenStore;
 use Farzai\ThaiPost\Entity\TokenEntity;
 
-class SessionToken implements TokenStore
+class MemoryTokenStore implements TokenStore
 {
 
-    public function __construct()
-    {
-        @session_start();
-    }
+    /**
+     * @var TokenEntity|null
+     */
+    private $token;
 
     /**
      * @param TokenEntity $token
@@ -19,7 +19,7 @@ class SessionToken implements TokenStore
      */
     public function save(TokenEntity $token)
     {
-        $_SESSION['THAIPOST_TOKEN'] = $token->asJson();
+        $this->token = $token;
     }
 
     /**
@@ -27,11 +27,7 @@ class SessionToken implements TokenStore
      */
     public function get()
     {
-        $json = @json_decode($_SESSION['THAIPOST_TOKEN'] ?? '', true);
-
-        if ($json) {
-            return TokenEntity::fromArray($json);
-        }
+        return $this->token;
     }
 
     /**
@@ -51,6 +47,6 @@ class SessionToken implements TokenStore
      */
     public function has()
     {
-        return ! is_null($_SESSION['THAIPOST_TOKEN'] ?? null);
+        return ! is_null($this->token);
     }
 }

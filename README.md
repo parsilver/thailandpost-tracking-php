@@ -53,7 +53,7 @@ $request->setStatus("all");
 
 // เมื่อเรียกคำสั่งด้านล่าง จะเสมือนเรียก api ตามตัวอย่างนี้
 // POST: https://trackapi.thailandpost.co.th/post/api/v1/track
-$response = $api->getItemsByBarcode($request)
+$response = $api->getItemsByBarcode($request);
 
 // ตรวจสอบว่าทำงานถูกต้องหรือไม่
 if ($response->isOk()) {
@@ -109,7 +109,7 @@ $request->withPreviousStatus();
 
 // เมื่อเรียกคำสั่งด้านล่าง จะเสมือนเรียก api ตามตัวอย่างนี้
 // POST: https://trackwebhook.thailandpost.co.th/post/api/v1/hook
-$response = $api->getItemsByBarcode($request)
+$response = $api->subscribeByBarcode($request);
 
 // ตรวจสอบว่าทำงานถูกต้องหรือไม่
 if ($response->isOk()) {
@@ -121,18 +121,50 @@ if ($response->isOk()) {
 
 ```
 
+## การรับค่าจาก Webhook
+เมื่อท่านตั้งค่า URL Webhook ของท่านแล้ว การนำข้อมูลที่ได้จากการส่งมาจาก Webhook มาใช้งาน
+
+เราได้เตรียมตัวรับข้อมูลเอาไว้ตรวจสอบให้ท่านใช้งานสะดวกมากยิ่งขึ้นตามตัวอย่างด้านล่าง
+
+```php
+// ในหน้ารับข้อมูล
+
+use Farzai\ThaiPost\Postman;
+
+// คำสั่งนี้เอาไว้รับข้อมูลจาก Webhook
+/** @var \Farzai\ThaiPost\Webhook\Entity\HookDataEntity $data */
+$data = Postman::capture();
+
+// ท่านสามารถตรวจสอบได้ว่าค่าที่ส่งมากจากไปรษณีย์ถูกต้องหรือไม่?
+if ($data->isValid()) {
+    // ดึงค่าออกมา
+    $data->track_datetime
+    
+    /** @var \Farzai\ThaiPost\Webhook\Entity\ItemEntity $item */
+    foreach ($data->items as $item) {
+        // ดึงค่าจาก Items
+        $item->barcode;
+        $item->delivery_datetime;
+        $item->delivery_status;
+        
+        // Field อื่นๆสามารถอ้างอิงได้จากเอกสารของทางไปรษณีย์ไทย....
+    }
+}
+```
+
 
 ---
 
 ### การตั้งค่า
 
-เนื่องจาก library ตัวนี้จะใช้ session ในการเก็บ token ที่ได้จากการเรียก api
+ทุกครั้งที่มีการเรียก API Tracking ต่างๆ Lib ตัวนี้จะคอยเรียก API Token เพื่อขอ Token จาก API ตัามตัวอย่างด้านล่าง
+และทำการถือ Token ที่ได้มาแล้วทำไปเรียก API Tracking อีกที
 ```
 GET: https://trackapi.thailandpost.co.th/post/api/v1/authenticate/token
 ```
 
-
-ท่านสามารถเปลี่ยนวิธีการเก็บ token ได้เองโดยการ implement `TokenStore`
+ดังนั้น หากท่านต้องการที่จะทำ Cache Token เก็บไว้ก่อนเรียก API 
+ท่านสามารถเก็บ token ได้เองโดยการ implement `TokenStore`
 ```php
 use Farzai\ThaiPost\Contracts\TokenStore
 ```
@@ -145,23 +177,34 @@ namespace App;
 use Farzai\ThaiPost\Contracts\TokenStore;
 use Farzai\ThaiPost\Entity\TokenEntity;
 
-class CustomStore implements TokenStore
+class FilesystemStore implements TokenStore
 {
+
+    private $filename = "thailand-post--token.txt";
+
     /**
+     * Save token
+     * 
      * @param TokenEntity $token
      * @return mixed
      */
     public function save(TokenEntity $token)
     {
-        file_put_contents("token.txt", json_encode($token));
+        // เก็บลง Database หรือ เก็บไว้ในไฟล์ก็ได้
+        // เช่น
+        file_put_contents($this->resolveFilePath(), $token->asJson());
     }
 
     /**
+     * Get Token
+     * 
      * @return TokenEntity|null
      */
     public function get()
     {
-        $json = @json_decode(file_get_contents("token.txt"), true);
+        $file = file_get_contents($this->resolveFilePath());
+        
+        $json = @json_decode($file, true);
         
         if ($json) {
             return TokenEntity::fromArray($json);
@@ -175,7 +218,17 @@ class CustomStore implements TokenStore
      */
     public function has()
     {
-        return file_get_contents("token.txt") !== false;
+        // ตรวจสอบว่าไม่ Token อยู่หรือไม่
+        return file_exists($this->resolveFilePath());
+    }
+    
+    
+    private function resolveFilePath()
+    {
+        return DIRECTORY_SEPARATOR . 
+                trim(sys_get_temp_dir(), DIRECTORY_SEPARATOR) . 
+                DIRECTORY_SEPARATOR . 
+                ltrim($this->filename, DIRECTORY_SEPARATOR);
     }
 }
 
@@ -186,16 +239,16 @@ class CustomStore implements TokenStore
 ```php
 use Farzai\ThaiPost\RestApi\Endpoint;
 use Farzai\ThaiPost\Client;
-use App\CustomStore;
+use App\FilesystemStore;
 
 $client = new Client([
     'api_key' => 'xxxxxxxx'
 ]);
 
-// เพิ่ม CustomStore ไปยัง Endpoint
+// เพิ่ม FilesystemStore ไปยัง Endpoint
 $api = new Endpoint($client);
 
-$api->setTokenStore(new CustomStore)
+$api->setTokenStore(new FilesystemStore)
 
 // Make request....
 ```

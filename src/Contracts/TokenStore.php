@@ -2,25 +2,12 @@
 
 namespace Farzai\ThaiPost\Contracts;
 
-use Farzai\ThaiPost\Entity\TokenEntity;
+use Farzai\ThaiPost\Repository\TokenRepository;
 
-interface TokenStore
+interface TokenStore extends TokenRepository
 {
     /**
-     * @param TokenEntity $token
-     * @return mixed
+     * @return string
      */
-    public function save(TokenEntity $token);
-
-    /**
-     * @return TokenEntity|null
-     */
-    public function get();
-
-    /**
-     * Check token has stored
-     *
-     * @return bool
-     */
-    public function has();
+    public function __toString();
 }
