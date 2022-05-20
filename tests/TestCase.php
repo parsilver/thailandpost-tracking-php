@@ -1,8 +1,9 @@
-<?php namespace Farzai\Tests;
+<?php
+
+namespace Farzai\Tests;
 
 use PHPUnit\Framework\TestCase as PHPUnitTestCase;
 
-class TestCase extends PHPUnitTestCase
+abstract class TestCase extends PHPUnitTestCase
 {
-
 }

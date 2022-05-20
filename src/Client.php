@@ -8,14 +8,23 @@ use Psr\Http\Client\ClientInterface;
 
 class Client
 {
+    /**
+     * Version of the Library.
+     */
     const VERSION = '1.0.0';
 
     /**
+     * Config for the Client.
+     * Required: api_key
+     * 
      * @var array
      */
     private $config;
 
     /**
+     * Config for the Client.
+     * Required: api_key
+     * 
      * @param array $config
      */
     public function __construct(array $config)
@@ -26,6 +35,8 @@ class Client
     }
 
     /**
+     * Make instance of RestApiClient.
+     * 
      * @return ClientInterface
      */
     public function restApi(): ClientInterface
@@ -39,6 +50,8 @@ class Client
     }
 
     /**
+     * Make instance for handle webhook.
+     * 
      * @return ClientInterface
      */
     public function webhook(): ClientInterface
@@ -52,6 +65,8 @@ class Client
     }
 
     /**
+     * Get client config.
+     * 
      * @param null $key
      * @return array|mixed|null
      */
@@ -65,11 +80,14 @@ class Client
     }
 
     /**
+     * Validate config before create client.
+     * 
      * @param array $config
      */
     private function validateConfig(array $config)
     {
-        if (! isset($config['api_key'])) {
+        // Check api_key must be set.
+        if (!isset($config['api_key']) || empty($config['api_key'])) {
             throw new \InvalidArgumentException("Please specify api_key");
         }
     }

@@ -1,4 +1,6 @@
-<?php namespace Farzai\ThaiPost\Entity;
+<?php
+
+namespace Farzai\ThaiPost\Entity;
 
 use JsonSerializable;
 use Psr\Http\Message\ServerRequestInterface;
@@ -7,11 +9,15 @@ abstract class AbstractEntity implements JsonSerializable
 {
 
     /**
+     * Raw data.
+     * 
      * @var array|null
      */
     protected $data;
 
     /**
+     * Map data to entity from array.
+     * 
      * @param array $data
      * @return static
      */
@@ -21,6 +27,8 @@ abstract class AbstractEntity implements JsonSerializable
     }
 
     /**
+     * Map data to entity from request.
+     * 
      * @param ServerRequestInterface $request
      * @return static
      */
@@ -30,6 +38,8 @@ abstract class AbstractEntity implements JsonSerializable
     }
 
     /**
+     * Entity data 
+     * 
      * @param array $data
      */
     public function __construct(array $data = [])
@@ -38,6 +48,8 @@ abstract class AbstractEntity implements JsonSerializable
     }
 
     /**
+     * Convert entity to json string.
+     * 
      * @return string
      */
     public function asJson()
@@ -46,6 +58,8 @@ abstract class AbstractEntity implements JsonSerializable
     }
 
     /**
+     * Convert entity to array.
+     * 
      * @return array
      */
     public function asArray()
