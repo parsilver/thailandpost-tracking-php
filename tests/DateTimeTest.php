@@ -22,7 +22,7 @@ class DateTimeTest extends TestCase
     }
 
 
-    public function test_should_return_date_time_from_api()
+    public function test_should_parse_date_time_from_api_success()
     {
         $dateTime = DateTime::parseFromAPI('04/11/2563 13:20:00+07:00');
 

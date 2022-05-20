@@ -43,10 +43,12 @@ class Response implements ResponseInterface
     public function json($key = null, $default = null)
     {
         if (is_null($this->json)) {
-            $this->json = @json_decode($this->getResponse()->getBody(), true) ?: false;
+            $this->json = @json_decode($this->response->getBody()->getContents(), true);
         }
 
-        return is_null($key) ? $this->json : Arr::get($this->json, $key, $default);
+        return is_null($key)
+            ? $this->json
+            : Arr::get($this->json, $key, $default);
     }
 
     /**
@@ -75,6 +77,6 @@ class Response implements ResponseInterface
      */
     public function __toString()
     {
-        return (string)$this->response->getBody();
+        return $this->response->getBody()->getContents();
     }
 }
