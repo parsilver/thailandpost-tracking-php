@@ -23,17 +23,17 @@ class Authorizer
     {
         $token = $this->getTokenFromStorage();
 
-        if (!$token) {
+        if (! $token) {
             $api = new ApiEndpoint($this->client);
 
-            $apiToken = $this->client->getConfig("token");
+            $apiToken = $this->client->getConfig('token');
 
             $response = $api->generateAccessToken($apiToken);
 
-            $plainToken = $response->json("token");
+            $plainToken = $response->json('token');
 
             // Parse from format: "2019-09-28 10:18:20+07:00"
-            $expiresAt = Carbon::parse($response->json("expire"));
+            $expiresAt = Carbon::parse($response->json('expire'));
 
             $token = new AccessTokenEntity(
                 $plainToken,

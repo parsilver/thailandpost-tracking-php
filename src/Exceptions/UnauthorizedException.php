@@ -7,9 +7,9 @@ use Exception;
 class UnauthorizedException extends Exception
 {
     public function __construct(
-        $message = "Unauthorized",
+        $message = 'Unauthorized',
         $code = 401,
-        Exception $previous = null
+        ?Exception $previous = null
     ) {
         parent::__construct($message, $code, $previous);
     }

@@ -3,9 +3,9 @@
 namespace Farzai\ThaiPost\Endpoints;
 
 use Farzai\ThaiPost\Client;
+use Farzai\ThaiPost\Exceptions\UnauthorizedException;
 use Farzai\ThaiPost\PendingRequest;
 use Farzai\Transport\Contracts\ResponseInterface;
-use Farzai\ThaiPost\Exceptions\UnauthorizedException;
 
 class ApiEndpoint
 {
@@ -22,7 +22,7 @@ class ApiEndpoint
         $this->client = $client;
 
         $transport = $this->client->getTransport();
-        $transport->setUri("https://trackapi.thailandpost.co.th");
+        $transport->setUri('https://trackapi.thailandpost.co.th');
     }
 
     /**
@@ -30,15 +30,15 @@ class ApiEndpoint
      */
     public function generateAccessToken(): ResponseInterface
     {
-        return $this->makeRequest("POST", "/post/api/v1/authenticate/token")
-            ->withToken($this->client->getConfig("token"), "Token")
+        return $this->makeRequest('POST', '/post/api/v1/authenticate/token')
+            ->withToken($this->client->getConfig('token'), 'Token')
             ->asJson()
             ->acceptJson()
             ->send()
             ->throw(function ($response) {
                 if ($response->getStatusCode() === 401) {
                     throw new UnauthorizedException(
-                        "Unauthorized",
+                        'Unauthorized',
                         $response->getStatusCode()
                     );
                 }
@@ -53,17 +53,17 @@ class ApiEndpoint
     public function trackByBarcodes(array $params): ResponseInterface
     {
         $defaultParams = [
-            "status" => "all",
-            "language" => "TH",
+            'status' => 'all',
+            'language' => 'TH',
         ];
 
         $barcodes = array_filter(
-            array_map("trim", (array) $params["barcode"] ?? [])
+            array_map('trim', (array) $params['barcode'] ?? [])
         );
 
-        $request = $this->makeRequest("POST", "/post/api/v1/track", [
-            "body" => array_merge($defaultParams, $params, [
-                "barcode" => $barcodes,
+        $request = $this->makeRequest('POST', '/post/api/v1/track', [
+            'body' => array_merge($defaultParams, $params, [
+                'barcode' => $barcodes,
             ]),
         ]);
 

@@ -3,8 +3,8 @@
 use Farzai\ThaiPost\ClientBuilder;
 use Farzai\ThaiPost\Endpoints\ApiEndpoint;
 
-it("can create a new api endpoint instance", function () {
-    $client = ClientBuilder::create()->setCredential("token")->build();
+it('can create a new api endpoint instance', function () {
+    $client = ClientBuilder::create()->setCredential('token')->build();
 
     $apiEndpoint = new ApiEndpoint($client);
 
@@ -12,6 +12,6 @@ it("can create a new api endpoint instance", function () {
 
     $transport = $apiEndpoint->getClient()->getTransport();
 
-    expect($transport->getUri())->toBe("https://trackapi.thailandpost.co.th");
+    expect($transport->getUri())->toBe('https://trackapi.thailandpost.co.th');
     expect($transport->getHeaders())->toBe([]);
 });
