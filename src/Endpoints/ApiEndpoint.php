@@ -71,18 +71,6 @@ class ApiEndpoint
     }
 
     /**
-     * Generate a new api token.
-     */
-    public function getToken(string $token): ResponseInterface
-    {
-        return $this->makeRequest("POST", "/post/api/v1/authenticate/token")
-            ->withToken($token, "Token")
-            ->asJson()
-            ->acceptJson()
-            ->send();
-    }
-
-    /**
      * Get client.
      */
     public function getClient(): Client

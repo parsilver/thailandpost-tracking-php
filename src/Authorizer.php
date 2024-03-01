@@ -10,7 +10,7 @@ class Authorizer
 {
     public function __construct(
         protected Client $client,
-        protected AccessTokenRepositoryInterface $accessTokenRepository,
+        protected AccessTokenRepositoryInterface $accessTokenRepository
     ) {
         $this->client = $client;
         $this->accessTokenRepository = $accessTokenRepository;
@@ -23,21 +23,21 @@ class Authorizer
     {
         $token = $this->getTokenFromStorage();
 
-        if (! $token) {
+        if (!$token) {
             $api = new ApiEndpoint($this->client);
 
-            $apiToken = $this->client->getConfig('token');
+            $apiToken = $this->client->getConfig("token");
 
-            $response = $api->getToken($apiToken)->throw();
+            $response = $api->generateAccessToken($apiToken);
 
-            $plainToken = $response->json('token');
+            $plainToken = $response->json("token");
 
             // Parse from format: "2019-09-28 10:18:20+07:00"
-            $expiresAt = Carbon::parse($response->json('expire'));
+            $expiresAt = Carbon::parse($response->json("expire"));
 
             $token = new AccessTokenEntity(
                 $plainToken,
-                $expiresAt->toDateTimeImmutable(),
+                $expiresAt->toDateTimeImmutable()
             );
 
             $this->accessTokenRepository->saveToken($token);
@@ -46,12 +46,16 @@ class Authorizer
         return $token;
     }
 
+    /**
+     * Get token from storage.
+     */
     public function getTokenFromStorage(): ?string
     {
         try {
             $token = $this->accessTokenRepository->getToken();
 
             $expires = Carbon::parse($token->expiresAt());
+
             if ($expires->isFuture()) {
                 return $token->getToken();
             }
