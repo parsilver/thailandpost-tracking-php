@@ -5,6 +5,7 @@ namespace Farzai\ThaiPost\Endpoints;
 use Farzai\ThaiPost\Client;
 use Farzai\ThaiPost\PendingRequest;
 use Farzai\Transport\Contracts\ResponseInterface;
+use Farzai\ThaiPost\Exceptions\UnauthorizedException;
 
 class ApiEndpoint
 {
@@ -21,7 +22,27 @@ class ApiEndpoint
         $this->client = $client;
 
         $transport = $this->client->getTransport();
-        $transport->setUri('https://trackapi.thailandpost.co.th');
+        $transport->setUri("https://trackapi.thailandpost.co.th");
+    }
+
+    /**
+     * Generate a new access token.
+     */
+    public function generateAccessToken(): ResponseInterface
+    {
+        return $this->makeRequest("POST", "/post/api/v1/authenticate/token")
+            ->withToken($this->client->getConfig("token"), "Token")
+            ->asJson()
+            ->acceptJson()
+            ->send()
+            ->throw(function ($response) {
+                if ($response->getStatusCode() === 401) {
+                    throw new UnauthorizedException(
+                        "Unauthorized",
+                        $response->getStatusCode()
+                    );
+                }
+            });
     }
 
     /**
@@ -29,22 +50,20 @@ class ApiEndpoint
      *
      * @param  array<string, mixed>  $params
      */
-    public function getItemsByBarcodes(array $params): ResponseInterface
+    public function trackByBarcodes(array $params): ResponseInterface
     {
         $defaultParams = [
-            'status' => 'all',
-            'language' => 'TH',
+            "status" => "all",
+            "language" => "TH",
         ];
 
-        $barcodes = array_filter(array_map('trim', $params['barcode'] ?? []));
+        $barcodes = array_filter(
+            array_map("trim", (array) $params["barcode"] ?? [])
+        );
 
-        if (empty($barcodes)) {
-            throw new \InvalidArgumentException('The barcode is required.');
-        }
-
-        $request = $this->makeRequest('POST', '/post/api/v1/track', [
-            'body' => array_merge($defaultParams, $params, [
-                'barcode' => $barcodes,
+        $request = $this->makeRequest("POST", "/post/api/v1/track", [
+            "body" => array_merge($defaultParams, $params, [
+                "barcode" => $barcodes,
             ]),
         ]);
 
@@ -56,8 +75,8 @@ class ApiEndpoint
      */
     public function getToken(string $token): ResponseInterface
     {
-        return $this->makeRequest('POST', '/post/api/v1/authenticate/token')
-            ->withToken($token, 'Token')
+        return $this->makeRequest("POST", "/post/api/v1/authenticate/token")
+            ->withToken($token, "Token")
             ->asJson()
             ->acceptJson()
             ->send();
