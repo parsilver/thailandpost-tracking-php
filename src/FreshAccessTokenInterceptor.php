@@ -3,15 +3,15 @@
 namespace Farzai\ThaiPost;
 
 use Farzai\ThaiPost\Contracts\AccessTokenRepositoryInterface;
+use Farzai\ThaiPost\Contracts\EndpointVisitable;
 use Farzai\ThaiPost\Contracts\EndpointVisitor;
 use Farzai\ThaiPost\Contracts\RequestInterceptor;
-use Farzai\ThaiPost\Exceptions\AccessTokenException;
-use Psr\Http\Message\RequestInterface as PsrRequestInterface;
-use Farzai\ThaiPost\Contracts\EndpointVisitable;
 use Farzai\ThaiPost\Endpoints\ApiEndpoint;
 use Farzai\ThaiPost\Endpoints\WebhookEndpoint;
+use Farzai\ThaiPost\Exceptions\AccessTokenException;
+use Psr\Http\Message\RequestInterface as PsrRequestInterface;
 
-class FreshAccessTokenInterceptor implements RequestInterceptor, EndpointVisitor
+class FreshAccessTokenInterceptor implements EndpointVisitor, RequestInterceptor
 {
     /**
      * The access token repository instance.

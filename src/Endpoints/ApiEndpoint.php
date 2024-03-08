@@ -57,7 +57,6 @@ class ApiEndpoint extends AbstractEndpoint implements EndpointVisitable
             ]),
         ]);
 
-
         return $request
             ->acceptJson()
             ->asJson()

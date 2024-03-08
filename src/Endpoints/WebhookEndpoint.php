@@ -2,11 +2,11 @@
 
 namespace Farzai\ThaiPost\Endpoints;
 
-use Farzai\Transport\Contracts\ResponseInterface;
-use Farzai\ThaiPost\Exceptions\InvalidApiTokenException;
-use Farzai\ThaiPost\FreshAccessTokenInterceptor;
 use Farzai\ThaiPost\Contracts\EndpointVisitable;
 use Farzai\ThaiPost\Contracts\EndpointVisitor;
+use Farzai\ThaiPost\Exceptions\InvalidApiTokenException;
+use Farzai\ThaiPost\FreshAccessTokenInterceptor;
+use Farzai\Transport\Contracts\ResponseInterface;
 
 class WebhookEndpoint extends AbstractEndpoint implements EndpointVisitable
 {

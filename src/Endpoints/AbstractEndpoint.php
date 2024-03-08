@@ -33,7 +33,6 @@ abstract class AbstractEndpoint
         return $this->client;
     }
 
-
     /**
      * Make a new request.
      */
