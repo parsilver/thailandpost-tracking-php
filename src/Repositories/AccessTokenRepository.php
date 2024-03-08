@@ -2,7 +2,6 @@
 
 namespace Farzai\ThaiPost\Repositories;
 
-use Farzai\Support\Carbon;
 use Farzai\ThaiPost\AccessTokenEntity;
 use Farzai\ThaiPost\Contracts\AccessTokenEntityInterface;
 use Farzai\ThaiPost\Contracts\AccessTokenRepositoryInterface;
@@ -26,7 +25,7 @@ class AccessTokenRepository implements AccessTokenRepositoryInterface
      */
     public function __construct(StorageRepositoryInterface $storage)
     {
-        $this->name = 'access-token';
+        $this->name = "access-token";
 
         $this->storage = $storage;
     }
@@ -37,19 +36,20 @@ class AccessTokenRepository implements AccessTokenRepositoryInterface
     public function getToken(): AccessTokenEntityInterface
     {
         if ($this->storage->has($this->name)) {
-            $data = $this->storage->get($this->name);
-
-            $data = @json_decode($data, true);
+            $data = @json_decode($this->storage->get($this->name), true);
 
             if (json_last_error() === JSON_ERROR_NONE) {
-                return new AccessTokenEntity(
-                    $data['token'],
-                    Carbon::parse($data['expires_at'])->toDateTimeImmutable(),
-                );
+                $token = AccessTokenEntity::fromArray($data);
+
+                if ($token->isExpired()) {
+                    throw new AccessTokenException("Access token has expired.");
+                }
+
+                return $token;
             }
         }
 
-        throw new AccessTokenException('Access token not found.');
+        throw new AccessTokenException("Invalid access token.");
     }
 
     /**
@@ -57,10 +57,7 @@ class AccessTokenRepository implements AccessTokenRepositoryInterface
      */
     public function saveToken(AccessTokenEntityInterface $accessToken): void
     {
-        $this->storage->create($this->name, json_encode([
-            'token' => $accessToken->getToken(),
-            'expires_at' => $accessToken->expiresAt()->format(Carbon::ATOM),
-        ]));
+        $this->storage->create($this->name, json_encode($accessToken));
     }
 
     /**

@@ -6,6 +6,8 @@ use Farzai\ThaiPost\Client;
 use Farzai\ThaiPost\Exceptions\UnauthorizedException;
 use Farzai\ThaiPost\PendingRequest;
 use Farzai\Transport\Contracts\ResponseInterface;
+use Farzai\ThaiPost\Exceptions\InvalidApiTokenException;
+use Farzai\ThaiPost\FreshAccessTokenInterceptor;
 
 class ApiEndpoint
 {
@@ -37,16 +39,13 @@ class ApiEndpoint
             ->send()
             ->throw(function ($response) {
                 if ($response->getStatusCode() === 401) {
-                    throw new UnauthorizedException(
-                        'Unauthorized',
-                        $response->getStatusCode()
-                    );
+                    throw new InvalidApiTokenException();
                 }
             });
     }
 
     /**
-     * Get items by barcode.
+     * Track by barcode.
      *
      * @param  array<string, mixed>  $params
      */
@@ -67,7 +66,11 @@ class ApiEndpoint
             ]),
         ]);
 
-        return $request->acceptJson()->asJson()->send();
+        return $request
+            ->acceptJson()
+            ->asJson()
+            ->withInterceptor(new FreshAccessTokenInterceptor($this->client))
+            ->send();
     }
 
     /**

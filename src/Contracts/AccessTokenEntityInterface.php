@@ -3,8 +3,9 @@
 namespace Farzai\ThaiPost\Contracts;
 
 use DateTimeImmutable;
+use JsonSerializable;
 
-interface AccessTokenEntityInterface
+interface AccessTokenEntityInterface extends JsonSerializable
 {
     /**
      * Get expires time
@@ -15,4 +16,9 @@ interface AccessTokenEntityInterface
      * Get token
      */
     public function getToken(): string;
+
+    /**
+     * Check if the token is expired
+     */
+    public function isExpired(): bool;
 }

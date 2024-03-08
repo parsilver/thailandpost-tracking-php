@@ -40,32 +40,26 @@ $client = ClientBuilder::create()
 // เรียกใช้งานตัวเชื่อมต่อ api
 $api = new ApiEndpoint($client);
 
-// บาร์โค้ดที่ต้องการติดตาม
-$barcodes = ['EY145587896TH', 'RC338848854TH']
+try {
+    // ส่งคำร้องขอเรื่อง ดึงสถานะของ barcode
+    $response = $api->trackByBarcodes([
+        // รายการที่ต้องการติดตาม
+        'barcode' => ['EY145587896TH', 'RC338848854TH'],
 
-// ส่งคำร้องขอเรื่อง ดึงสถานะของ barcode
-$response = $api->track([
-    'barcode' => $barcodes,
-
-    // Options
-    'status' => 'all',
-    'language' => 'TH',
-]);
-
-// ตรวจสอบว่าทำงานถูกต้องหรือไม่
-if ($response->isSuccessfull()) {
-
-    // คุณสามารถนำ json response มาใช้งานได้จากคำสั่งด้านล่างได้เลย
-    // @return array
-    $returnedJson = $response->json();
-
-    // หรือ ต้องการเข้าไปยัง path ของ json
-    // สามารถใส่ parameter เข้าไปได้เลย
-    $message = $response->json('message');
-
-    // ในกรณีที่ลึกไปอีก 2 ชั้น
-    $countNumber = $response->json('response.track_count.count_number');
+        // Options
+        'status' => 'all',
+        'language' => 'TH',
+    ]);
+} catch (InvalidApiTokenException $e) {
+    // กรณีที่ API Token ไม่ถูกต้อง
+    exit($e->getMessage());
 }
+
+// คุณสามารถนำ json response มาใช้งานได้จากคำสั่งด้านล่างได้เลย
+$array = $response->json();
+
+// หรือ ต้องการเข้าไปยัง path ของ json
+$countNumber = $response->json('response.track_count.count_number');
 
 ```
 

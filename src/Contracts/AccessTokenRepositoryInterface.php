@@ -6,6 +6,7 @@ interface AccessTokenRepositoryInterface
 {
     /**
      * Get access token.
+     * If the access token is not found or expired, it should throw an AccessTokenException.
      *
      * @throws \Farzai\ThaiPost\Exceptions\AccessTokenException
      */
@@ -13,7 +14,6 @@ interface AccessTokenRepositoryInterface
 
     /**
      * Save access token.
-     *
      *
      * @throws \Farzai\ThaiPost\Exceptions\AccessTokenException
      */

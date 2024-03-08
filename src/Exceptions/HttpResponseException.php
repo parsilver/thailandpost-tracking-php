@@ -1,6 +1,6 @@
 <?php
 
-namespace Farzai\ThaiPost\Exception;
+namespace Farzai\ThaiPost\Exceptions;
 
 use Exception;
 
