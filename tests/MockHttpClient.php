@@ -17,7 +17,6 @@ class MockHttpClient extends PHPUnitTestCase implements PsrClientInterface
      */
     private array $sequence = [];
 
-
     /**
      * Create a response with the given status code and contents.
      */
@@ -99,5 +98,4 @@ class MockHttpClient extends PHPUnitTestCase implements PsrClientInterface
 
         return $response;
     }
-
 }

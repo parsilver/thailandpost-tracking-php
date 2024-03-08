@@ -2,10 +2,10 @@
 
 use Farzai\ThaiPost\ClientBuilder;
 use Farzai\ThaiPost\Endpoints\ApiEndpoint;
+use Farzai\ThaiPost\Exceptions\InvalidApiTokenException;
+use Psr\Http\Client\ClientInterface as PsrClientInterface;
 use Psr\Http\Message\ResponseInterface as PsrResponseInterface;
 use Psr\Http\Message\StreamInterface as PsrStreamInterface;
-use Psr\Http\Client\ClientInterface as PsrClientInterface;
-use Farzai\ThaiPost\Exceptions\InvalidApiTokenException;
 
 it('should throw exception when invalid api-token', function () {
     $htmlBody = '<html><body><h1>Unauthorized</h1></body></html>';
@@ -31,7 +31,7 @@ it('should throw exception when invalid api-token', function () {
     $response = $apiEndpoint->generateAccessToken();
 })->throws(
     InvalidApiTokenException::class,
-    "Invalid api key, Please check api token from your dashboard at https://track.thailandpost.co.th/dashboard."
+    'Invalid api key, Please check api token from your dashboard at https://track.thailandpost.co.th/dashboard.'
 );
 
 it('should return access token', function () {

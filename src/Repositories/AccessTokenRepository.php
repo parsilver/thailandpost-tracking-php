@@ -25,7 +25,7 @@ class AccessTokenRepository implements AccessTokenRepositoryInterface
      */
     public function __construct(StorageRepositoryInterface $storage)
     {
-        $this->name = "access-token";
+        $this->name = 'access-token';
 
         $this->storage = $storage;
     }
@@ -42,14 +42,14 @@ class AccessTokenRepository implements AccessTokenRepositoryInterface
                 $token = AccessTokenEntity::fromArray($data);
 
                 if ($token->isExpired()) {
-                    throw new AccessTokenException("Access token has expired.");
+                    throw new AccessTokenException('Access token has expired.');
                 }
 
                 return $token;
             }
         }
 
-        throw new AccessTokenException("Invalid access token.");
+        throw new AccessTokenException('Invalid access token.');
     }
 
     /**

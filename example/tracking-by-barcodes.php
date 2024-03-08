@@ -5,7 +5,7 @@ require_once __DIR__.'/../vendor/autoload.php';
 use Farzai\ThaiPost\ClientBuilder;
 use Farzai\ThaiPost\Endpoints\ApiEndpoint;
 
-$tokenKey = "your-token-key";
+$tokenKey = 'your-token-key';
 
 $client = ClientBuilder::create()
     ->setCredential($tokenKey)
@@ -14,11 +14,11 @@ $client = ClientBuilder::create()
 $api = new ApiEndpoint($client);
 
 $response = $api->trackByBarcodes([
-    "barcode" => ["EN123456789TH", "EN987654321TH"],
+    'barcode' => ['EN123456789TH', 'EN987654321TH'],
 ]);
 
 if ($response->isSuccessfull()) {
-    echo $countNumber = $response->json("response.track_count.count_number");
+    echo $countNumber = $response->json('response.track_count.count_number');
 } else {
-    echo "Error";
+    echo 'Error';
 }

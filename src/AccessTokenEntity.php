@@ -30,32 +30,32 @@ class AccessTokenEntity implements AccessTokenEntityInterface
     /**
      * Create a new access token entity from an array.
      *
-     * @param array $data
      * @return static
+     *
      * @throws \InvalidArgumentException
      */
     public static function fromArray(array $data): self
     {
         // Validate the access token entity data.
-        if (!isset($data["token"], $data["expires_at"])) {
+        if (! isset($data['token'], $data['expires_at'])) {
             throw new \InvalidArgumentException(
-                "The access token entity data is invalid."
+                'The access token entity data is invalid.'
             );
         }
 
-        if (is_string($data["expires_at"])) {
+        if (is_string($data['expires_at'])) {
             $expiresAt = Carbon::parse(
-                $data["expires_at"]
+                $data['expires_at']
             )->toDateTimeImmutable();
-        } elseif ($data["expires_at"] instanceof DateTimeImmutable) {
-            $expiresAt = $data["expires_at"];
+        } elseif ($data['expires_at'] instanceof DateTimeImmutable) {
+            $expiresAt = $data['expires_at'];
         } else {
             throw new \InvalidArgumentException(
-                "The access token entity data is invalid."
+                'The access token entity data is invalid.'
             );
         }
 
-        return new self($data["token"], $expiresAt);
+        return new self($data['token'], $expiresAt);
     }
 
     /**
@@ -88,8 +88,8 @@ class AccessTokenEntity implements AccessTokenEntityInterface
     public function toArray(): array
     {
         return [
-            "token" => $this->token,
-            "expires_at" => $this->expiresAt->format(Carbon::ATOM),
+            'token' => $this->token,
+            'expires_at' => $this->expiresAt->format(Carbon::ATOM),
         ];
     }
 
