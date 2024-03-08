@@ -2,20 +2,20 @@
 
 namespace Farzai\ThaiPost\Endpoints;
 
-use Farzai\ThaiPost\Contracts\EndpointVisitable;
-use Farzai\ThaiPost\Contracts\EndpointVisitor;
+use Farzai\Transport\Contracts\ResponseInterface;
 use Farzai\ThaiPost\Exceptions\InvalidApiTokenException;
 use Farzai\ThaiPost\FreshAccessTokenInterceptor;
-use Farzai\Transport\Contracts\ResponseInterface;
+use Farzai\ThaiPost\Contracts\EndpointVisitable;
+use Farzai\ThaiPost\Contracts\EndpointVisitor;
 
-class ApiEndpoint extends AbstractEndpoint implements EndpointVisitable
+class WebhookEndpoint extends AbstractEndpoint implements EndpointVisitable
 {
     /**
      * Get the base uri of the endpoint.
      */
     public function getUri(): string
     {
-        return 'https://trackapi.thailandpost.co.th';
+        return 'https://trackwebhook.thailandpost.co.th';
     }
 
     /**
@@ -36,31 +36,28 @@ class ApiEndpoint extends AbstractEndpoint implements EndpointVisitable
     }
 
     /**
-     * Track by barcode.
+     * Subscribe by barcodes.
      *
      * @param  array<string, mixed>  $params
      */
-    public function trackByBarcodes(array $params): ResponseInterface
+    public function subscribeByBarcodes(array $params): ResponseInterface
     {
         $defaultParams = [
             'status' => 'all',
             'language' => 'TH',
+            'req_previous_status' => false,
         ];
 
         $barcodes = array_filter(
             array_map('trim', (array) $params['barcode'] ?? [])
         );
 
-        $request = $this->makeRequest('POST', '/post/api/v1/track', [
-            'body' => array_merge($defaultParams, $params, [
+        return $this->makeRequest('POST', '/post/api/v1/hook')
+            ->withBody(array_merge($defaultParams, $params, [
                 'barcode' => $barcodes,
-            ]),
-        ]);
-
-
-        return $request
-            ->acceptJson()
+            ]))
             ->asJson()
+            ->acceptJson()
             ->withInterceptor(new FreshAccessTokenInterceptor($this, $this->getClient()->getAccessTokenRepository()))
             ->send();
     }
@@ -70,6 +67,6 @@ class ApiEndpoint extends AbstractEndpoint implements EndpointVisitable
      */
     public function accept(EndpointVisitor $visitor)
     {
-        return $visitor->generateAccessTokenForApiEndpoint($this);
+        return $visitor->generateAccessTokenForWebhookEndpoint($this);
     }
 }
