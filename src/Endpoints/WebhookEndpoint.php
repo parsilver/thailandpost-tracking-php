@@ -58,7 +58,10 @@ class WebhookEndpoint extends AbstractEndpoint implements EndpointVisitable
             ]))
             ->asJson()
             ->acceptJson()
-            ->withInterceptor(new FreshAccessTokenInterceptor($this, $this->getClient()->getAccessTokenRepository()))
+            ->withInterceptor(new FreshAccessTokenInterceptor(
+                $this->getClient()->getAccessTokenRepository(),
+                $this,
+            ))
             ->send();
     }
 
@@ -67,6 +70,6 @@ class WebhookEndpoint extends AbstractEndpoint implements EndpointVisitable
      */
     public function accept(EndpointVisitor $visitor)
     {
-        return $visitor->generateAccessTokenForWebhookEndpoint($this);
+        return $visitor->generateAccessTokenForWebhookEndpoint($this->getClient());
     }
 }

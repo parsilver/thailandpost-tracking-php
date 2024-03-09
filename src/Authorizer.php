@@ -2,67 +2,45 @@
 
 namespace Farzai\ThaiPost;
 
-use Farzai\Support\Carbon;
-use Farzai\ThaiPost\Contracts\AccessTokenRepositoryInterface;
+use Farzai\ThaiPost\Contracts\EndpointVisitor;
 use Farzai\ThaiPost\Endpoints\ApiEndpoint;
+use Farzai\ThaiPost\Endpoints\WebhookEndpoint;
 
-class Authorizer
+class Authorizer implements EndpointVisitor
 {
-    public function __construct(
-        protected Client $client,
-        protected AccessTokenRepositoryInterface $accessTokenRepository
-    ) {
-        $this->client = $client;
-        $this->accessTokenRepository = $accessTokenRepository;
+    /**
+     * Generate a new access token for the API endpoint.
+     */
+    public function generateAccessTokenForApiEndpoint(Client $client): AccessTokenEntity
+    {
+        $response = (new ApiEndpoint($client))->generateAccessToken();
+
+        $token = $response->json('token');
+        $expires = $response->json('expire');
+
+        $accessToken = AccessTokenEntity::fromArray([
+            'token' => $token,
+            'expires_at' => $expires,
+        ]);
+
+        return $accessToken;
     }
 
     /**
-     * Generate a new api token.
+     * Generate a new access token for the webhook endpoint.
      */
-    public function retrieveToken(): string
+    public function generateAccessTokenForWebhookEndpoint(Client $client): AccessTokenEntity
     {
-        $token = $this->getTokenFromStorage();
+        $response = (new WebhookEndpoint($client))->generateAccessToken();
 
-        if (! $token) {
-            $api = new ApiEndpoint($this->client);
+        $token = $response->json('token');
+        $expires = $response->json('expire');
 
-            $apiToken = $this->client->getConfig('token');
+        $accessToken = AccessTokenEntity::fromArray([
+            'token' => $token,
+            'expires_at' => $expires,
+        ]);
 
-            $response = $api->generateAccessToken($apiToken);
-
-            $plainToken = $response->json('token');
-
-            // Parse from format: "2019-09-28 10:18:20+07:00"
-            $expiresAt = Carbon::parse($response->json('expire'));
-
-            $token = new AccessTokenEntity(
-                $plainToken,
-                $expiresAt->toDateTimeImmutable()
-            );
-
-            $this->accessTokenRepository->saveToken($token);
-        }
-
-        return $token;
-    }
-
-    /**
-     * Get token from storage.
-     */
-    public function getTokenFromStorage(): ?string
-    {
-        try {
-            $token = $this->accessTokenRepository->getToken();
-
-            $expires = Carbon::parse($token->expiresAt());
-
-            if ($expires->isFuture()) {
-                return $token->getToken();
-            }
-        } catch (\Throwable $th) {
-            //
-        }
-
-        return null;
+        return $accessToken;
     }
 }

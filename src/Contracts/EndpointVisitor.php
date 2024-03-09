@@ -3,12 +3,17 @@
 namespace Farzai\ThaiPost\Contracts;
 
 use Farzai\ThaiPost\AccessTokenEntity;
-use Farzai\ThaiPost\Endpoints\ApiEndpoint;
-use Farzai\ThaiPost\Endpoints\WebhookEndpoint;
+use Farzai\ThaiPost\Client;
 
 interface EndpointVisitor
 {
-    public function generateAccessTokenForApiEndpoint(ApiEndpoint $endpoint): AccessTokenEntity;
+    /**
+     * Generate a new access token for the API endpoint.
+     */
+    public function generateAccessTokenForApiEndpoint(Client $client): AccessTokenEntity;
 
-    public function generateAccessTokenForWebhookEndpoint(WebhookEndpoint $endpoint): AccessTokenEntity;
+    /**
+     * Generate a new access token for the webhook endpoint.
+     */
+    public function generateAccessTokenForWebhookEndpoint(Client $client): AccessTokenEntity;
 }

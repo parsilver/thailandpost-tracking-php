@@ -54,7 +54,6 @@ it('should track by barcodes success', function () {
 });
 
 it('should refresh access token if token is expired', function () {
-
     $httpClient = MockHttpClient::new()
         ->addSequence(
             MockHttpClient::response(

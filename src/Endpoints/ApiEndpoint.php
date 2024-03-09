@@ -60,7 +60,10 @@ class ApiEndpoint extends AbstractEndpoint implements EndpointVisitable
         return $request
             ->acceptJson()
             ->asJson()
-            ->withInterceptor(new FreshAccessTokenInterceptor($this, $this->getClient()->getAccessTokenRepository()))
+            ->withInterceptor(new FreshAccessTokenInterceptor(
+                $this->getClient()->getAccessTokenRepository(),
+                $this,
+            ))
             ->send();
     }
 
@@ -69,6 +72,6 @@ class ApiEndpoint extends AbstractEndpoint implements EndpointVisitable
      */
     public function accept(EndpointVisitor $visitor)
     {
-        return $visitor->generateAccessTokenForApiEndpoint($this);
+        return $visitor->generateAccessTokenForApiEndpoint($this->getClient());
     }
 }

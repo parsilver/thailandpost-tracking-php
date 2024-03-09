@@ -7,10 +7,14 @@ use Farzai\ThaiPost\ClientBuilder;
 
 it('should success if config is valid', function () {
     $client = ClientBuilder::create()
-        ->setCredential('token')
+        ->setCredential('this-is-token')
         ->build();
 
     expect($client)->toBeInstanceOf(Client::class);
+
+    expect($client->getConfig())->toBe([
+        'token' => 'this-is-token',
+    ]);
 });
 
 it('should set logger success', function () {

@@ -4,28 +4,34 @@ namespace Farzai\ThaiPost;
 
 use Farzai\ThaiPost\Contracts\AccessTokenRepositoryInterface;
 use Farzai\ThaiPost\Contracts\EndpointVisitable;
-use Farzai\ThaiPost\Contracts\EndpointVisitor;
 use Farzai\ThaiPost\Contracts\RequestInterceptor;
-use Farzai\ThaiPost\Endpoints\ApiEndpoint;
-use Farzai\ThaiPost\Endpoints\WebhookEndpoint;
 use Farzai\ThaiPost\Exceptions\AccessTokenException;
 use Psr\Http\Message\RequestInterface as PsrRequestInterface;
 
-class FreshAccessTokenInterceptor implements EndpointVisitor, RequestInterceptor
+class FreshAccessTokenInterceptor implements RequestInterceptor
 {
+    /**
+     * The endpoint visitable instance.
+     */
+    private EndpointVisitable $endpointVisitable;
+
     /**
      * The access token repository instance.
      */
     private AccessTokenRepositoryInterface $accessTokenRepository;
 
-    private EndpointVisitable $endpoint;
+    /**
+     * The authorizer instance.
+     */
+    private Authorizer $authorizer;
 
     /**
      * Create a new interceptor instance.
      */
-    public function __construct(EndpointVisitable $endpoint, AccessTokenRepositoryInterface $accessTokenRepository)
+    public function __construct(AccessTokenRepositoryInterface $accessTokenRepository, EndpointVisitable $endpointVisitable)
     {
-        $this->endpoint = $endpoint;
+        $this->authorizer = new Authorizer();
+        $this->endpointVisitable = $endpointVisitable;
         $this->accessTokenRepository = $accessTokenRepository;
     }
 
@@ -38,11 +44,11 @@ class FreshAccessTokenInterceptor implements EndpointVisitor, RequestInterceptor
         try {
             $accessToken = $this->accessTokenRepository->getToken();
         } catch (AccessTokenException) {
-            // If the access token is not found or expired.
-            // generate a new access token.
-            // And save the access token to the repository.
+
+            // If the access token is not found, we need to generate a new one.
             $this->accessTokenRepository->saveToken(
-                $accessToken = $this->endpoint->accept($this)
+                // Accept the visitor to generate a new access token.
+                $accessToken = $this->endpointVisitable->accept($this->authorizer)
             );
         }
 
@@ -52,41 +58,5 @@ class FreshAccessTokenInterceptor implements EndpointVisitor, RequestInterceptor
             'Authorization',
             "Token {$token}"
         );
-    }
-
-    /**
-     * Generate a new access token for the API endpoint.
-     */
-    public function generateAccessTokenForApiEndpoint(ApiEndpoint $endpoint): AccessTokenEntity
-    {
-        $response = $endpoint->generateAccessToken();
-
-        $token = $response->json('token');
-        $expires = $response->json('expire');
-
-        $accessToken = AccessTokenEntity::fromArray([
-            'token' => $token,
-            'expires_at' => $expires,
-        ]);
-
-        return $accessToken;
-    }
-
-    /**
-     * Generate a new access token for the webhook endpoint.
-     */
-    public function generateAccessTokenForWebhookEndpoint(WebhookEndpoint $endpoint): AccessTokenEntity
-    {
-        $response = $endpoint->generateAccessToken();
-
-        $token = $response->json('token');
-        $expires = $response->json('expire');
-
-        $accessToken = AccessTokenEntity::fromArray([
-            'token' => $token,
-            'expires_at' => $expires,
-        ]);
-
-        return $accessToken;
     }
 }
