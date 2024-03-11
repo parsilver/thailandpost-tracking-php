@@ -21,8 +21,6 @@ class ApiEndpoint extends AbstractEndpoint implements EndpointVisitable
     /**
      * Track by barcode.
      *
-     * @param  array  $params
-     * @return \Farzai\Transport\Contracts\ResponseInterface
      *
      * @requestBody [
      *    "status" => "all",
@@ -78,7 +76,7 @@ class ApiEndpoint extends AbstractEndpoint implements EndpointVisitable
         ];
 
         $barcodes = is_string($params['barcode']) ? explode(',', $params['barcode']) : $params['barcode'];
-        $barcodes = array_filter(array_map('trim', (array)$barcodes));
+        $barcodes = array_filter(array_map('trim', (array) $barcodes));
 
         $request = $this->makeRequest('POST', '/post/api/v1/track', [
             'body' => array_merge($defaultParams, $params, [
@@ -96,8 +94,6 @@ class ApiEndpoint extends AbstractEndpoint implements EndpointVisitable
     /**
      * Track by receipt.
      *
-     * @param  array  $params
-     * @return \Farzai\Transport\Contracts\ResponseInterface
      *
      * @requestBody [
      *    "status" => "all",
@@ -171,7 +167,6 @@ class ApiEndpoint extends AbstractEndpoint implements EndpointVisitable
             ->send();
     }
 
-
     /**
      * Generate a new access token.
      */
@@ -192,7 +187,6 @@ class ApiEndpoint extends AbstractEndpoint implements EndpointVisitable
     /**
      * Accept the visitor.
      *
-     * @param  \Farzai\ThaiPost\Contracts\EndpointVisitor  $visitor
      *
      * @return \Farzai\ThaiPost\AccessTokenEntity
      */
