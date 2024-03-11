@@ -21,16 +21,12 @@ class FreshAccessTokenInterceptor implements RequestInterceptor
     private AccessTokenRepositoryInterface $accessTokenRepository;
 
     /**
-     * The authorizer instance.
-     */
-    private Authorizer $authorizer;
-
-    /**
      * Create a new interceptor instance.
      */
-    public function __construct(AccessTokenRepositoryInterface $accessTokenRepository, EndpointVisitable $endpointVisitable)
-    {
-        $this->authorizer = new Authorizer();
+    public function __construct(
+        AccessTokenRepositoryInterface $accessTokenRepository,
+        EndpointVisitable $endpointVisitable,
+    ) {
         $this->endpointVisitable = $endpointVisitable;
         $this->accessTokenRepository = $accessTokenRepository;
     }
@@ -48,7 +44,7 @@ class FreshAccessTokenInterceptor implements RequestInterceptor
             // If the access token is not found, we need to generate a new one.
             $this->accessTokenRepository->saveToken(
                 // Accept the visitor to generate a new access token.
-                $accessToken = $this->endpointVisitable->accept($this->authorizer)
+                $accessToken = $this->endpointVisitable->accept(new Authorizer()),
             );
         }
 

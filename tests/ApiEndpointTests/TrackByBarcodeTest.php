@@ -42,7 +42,7 @@ it('should track by barcodes success', function () {
 
     $api = new ApiEndpoint($client);
 
-    $response = $api->trackByBarcodes([
+    $response = $api->getItemsByBarcodes([
         'barcode' => ['1234567890', '1234567890'],
     ]);
 
@@ -107,7 +107,7 @@ it('should refresh access token if token is expired', function () {
 
     $api = new ApiEndpoint($client);
 
-    $response = $api->trackByBarcodes([
+    $response = $api->getItemsByBarcodes([
         'barcode' => ['1234567890', '1234567890'],
     ]);
 
