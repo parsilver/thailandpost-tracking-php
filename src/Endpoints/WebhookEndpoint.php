@@ -2,10 +2,10 @@
 
 namespace Farzai\ThaiPost\Endpoints;
 
-use Farzai\ThaiPost\Exceptions\InvalidApiTokenException;
-use Psr\Http\Message\RequestInterface as PsrRequestInterface;
-use Farzai\Transport\Contracts\ResponseInterface;
 use Farzai\ThaiPost\Authorizer;
+use Farzai\ThaiPost\Exceptions\InvalidApiTokenException;
+use Farzai\Transport\Contracts\ResponseInterface;
+use Psr\Http\Message\RequestInterface as PsrRequestInterface;
 
 class WebhookEndpoint extends AbstractEndpoint
 {

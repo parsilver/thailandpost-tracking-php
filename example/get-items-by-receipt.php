@@ -1,6 +1,6 @@
 <?php
 
-require_once __DIR__ . '/../vendor/autoload.php';
+require_once __DIR__.'/../vendor/autoload.php';
 
 use Farzai\ThaiPost\ClientBuilder;
 use Farzai\ThaiPost\Endpoints\ApiEndpoint;
@@ -17,9 +17,9 @@ $response = $api->getItemsByReceipts([
     'status' => 'all',
     'language' => 'TH',
     'receiptNo' => [
-        "361101377131",
-        "361101377132",
-        "361101377133",
+        '361101377131',
+        '361101377132',
+        '361101377133',
     ],
 ]);
 

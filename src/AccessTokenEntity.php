@@ -37,7 +37,7 @@ class AccessTokenEntity implements AccessTokenEntityInterface
     public static function fromArray(array $data): self
     {
         // Validate the access token entity data.
-        if (!isset($data['token'], $data['expires_at'])) {
+        if (! isset($data['token'], $data['expires_at'])) {
             throw new \InvalidArgumentException(
                 'The access token entity data is invalid.'
             );

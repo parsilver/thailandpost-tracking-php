@@ -2,10 +2,10 @@
 
 namespace Farzai\ThaiPost\Endpoints;
 
+use Farzai\ThaiPost\Authorizer;
 use Farzai\ThaiPost\Exceptions\InvalidApiTokenException;
 use Farzai\Transport\Contracts\ResponseInterface;
 use Psr\Http\Message\RequestInterface as PsrRequestInterface;
-use Farzai\ThaiPost\Authorizer;
 
 class ApiEndpoint extends AbstractEndpoint
 {
@@ -182,7 +182,6 @@ class ApiEndpoint extends AbstractEndpoint
                 }
             });
     }
-
 
     private function getRequestInterceptor(): callable
     {

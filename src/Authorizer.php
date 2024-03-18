@@ -45,7 +45,6 @@ class Authorizer
         return $token;
     }
 
-
     /**
      * Generate a new access token for the API endpoint.
      */

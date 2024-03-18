@@ -127,7 +127,7 @@ class PendingRequest
      */
     public function withToken(string $token, string $type = 'Bearer'): self
     {
-        return $this->withHeader('Authorization', $type . ' ' . $token);
+        return $this->withHeader('Authorization', $type.' '.$token);
     }
 
     /**
@@ -177,11 +177,11 @@ class PendingRequest
     public function createRequest(string $method, string $path, array $options = []): PsrRequestInterface
     {
         // Normalize path
-        $path = '/' . trim($path, '/');
+        $path = '/'.trim($path, '/');
 
         // Query
-        if (isset($options['query']) && is_array($options['query']) && !empty($options['query'])) {
-            $path .= '?' . http_build_query($options['query']);
+        if (isset($options['query']) && is_array($options['query']) && ! empty($options['query'])) {
+            $path .= '?'.http_build_query($options['query']);
         }
 
         // Set body
