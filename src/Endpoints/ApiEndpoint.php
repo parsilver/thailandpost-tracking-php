@@ -2,13 +2,12 @@
 
 namespace Farzai\ThaiPost\Endpoints;
 
-use Farzai\ThaiPost\Contracts\EndpointVisitable;
-use Farzai\ThaiPost\Contracts\EndpointVisitor;
 use Farzai\ThaiPost\Exceptions\InvalidApiTokenException;
-use Farzai\ThaiPost\FreshAccessTokenInterceptor;
 use Farzai\Transport\Contracts\ResponseInterface;
+use Psr\Http\Message\RequestInterface as PsrRequestInterface;
+use Farzai\ThaiPost\Authorizer;
 
-class ApiEndpoint extends AbstractEndpoint implements EndpointVisitable
+class ApiEndpoint extends AbstractEndpoint
 {
     /**
      * Get the base uri of the endpoint.
@@ -87,7 +86,7 @@ class ApiEndpoint extends AbstractEndpoint implements EndpointVisitable
         return $request
             ->acceptJson()
             ->asJson()
-            ->withInterceptor($this->getFreshAccessTokenInterceptor())
+            ->withInterceptor($this->getRequestInterceptor())
             ->send();
     }
 
@@ -163,7 +162,7 @@ class ApiEndpoint extends AbstractEndpoint implements EndpointVisitable
         return $request
             ->acceptJson()
             ->asJson()
-            ->withInterceptor($this->getFreshAccessTokenInterceptor())
+            ->withInterceptor($this->getRequestInterceptor())
             ->send();
     }
 
@@ -184,27 +183,14 @@ class ApiEndpoint extends AbstractEndpoint implements EndpointVisitable
             });
     }
 
-    /**
-     * Accept the visitor.
-     *
-     *
-     * @return \Farzai\ThaiPost\AccessTokenEntity
-     */
-    public function accept(EndpointVisitor $visitor)
-    {
-        return $visitor->generateAccessTokenForApiEndpoint($this->getClient());
-    }
 
-    /**
-     * Get the fresh access token interceptor.
-     *
-     * @return \Farzai\ThaiPost\FreshAccessTokenInterceptor
-     */
-    private function getFreshAccessTokenInterceptor()
+    private function getRequestInterceptor(): callable
     {
-        return new FreshAccessTokenInterceptor(
-            $this->getClient()->getAccessTokenRepository(),
-            $this,
-        );
+        return function (PsrRequestInterface $request) {
+            $authorizer = new Authorizer($this->client);
+            $accessToken = $authorizer->retrieveAccessTokenForApi();
+
+            return $request->withHeader('Authorization', "Bearer {$accessToken}");
+        };
     }
 }

@@ -71,7 +71,7 @@ class PendingRequest
         return $this;
     }
 
-    public function withInterceptor(RequestInterceptor $interceptor): self
+    public function withInterceptor(RequestInterceptor|callable $interceptor): self
     {
         $this->interceptors[] = $interceptor;
 
@@ -127,7 +127,7 @@ class PendingRequest
      */
     public function withToken(string $token, string $type = 'Bearer'): self
     {
-        return $this->withHeader('Authorization', $type.' '.$token);
+        return $this->withHeader('Authorization', $type . ' ' . $token);
     }
 
     /**
@@ -159,7 +159,11 @@ class PendingRequest
 
         // Apply interceptors
         foreach ($this->interceptors as $interceptor) {
-            $request = $interceptor->apply($request);
+            if (is_callable($interceptor)) {
+                $request = $interceptor($request);
+            } else {
+                $request = $interceptor->apply($request);
+            }
         }
 
         return $this->createResponse($request, $this->client->sendRequest($request));
@@ -173,11 +177,11 @@ class PendingRequest
     public function createRequest(string $method, string $path, array $options = []): PsrRequestInterface
     {
         // Normalize path
-        $path = '/'.trim($path, '/');
+        $path = '/' . trim($path, '/');
 
         // Query
-        if (isset($options['query']) && is_array($options['query']) && ! empty($options['query'])) {
-            $path .= '?'.http_build_query($options['query']);
+        if (isset($options['query']) && is_array($options['query']) && !empty($options['query'])) {
+            $path .= '?' . http_build_query($options['query']);
         }
 
         // Set body

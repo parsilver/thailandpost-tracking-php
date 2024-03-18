@@ -2,13 +2,12 @@
 
 namespace Farzai\ThaiPost\Endpoints;
 
-use Farzai\ThaiPost\Contracts\EndpointVisitable;
-use Farzai\ThaiPost\Contracts\EndpointVisitor;
 use Farzai\ThaiPost\Exceptions\InvalidApiTokenException;
-use Farzai\ThaiPost\FreshAccessTokenInterceptor;
+use Psr\Http\Message\RequestInterface as PsrRequestInterface;
 use Farzai\Transport\Contracts\ResponseInterface;
+use Farzai\ThaiPost\Authorizer;
 
-class WebhookEndpoint extends AbstractEndpoint implements EndpointVisitable
+class WebhookEndpoint extends AbstractEndpoint
 {
     /**
      * Get the base uri of the endpoint.
@@ -58,18 +57,17 @@ class WebhookEndpoint extends AbstractEndpoint implements EndpointVisitable
             ]))
             ->asJson()
             ->acceptJson()
-            ->withInterceptor(new FreshAccessTokenInterceptor(
-                $this->getClient()->getAccessTokenRepository(),
-                $this,
-            ))
+            ->withInterceptor($this->getRequestInterceptor())
             ->send();
     }
 
-    /**
-     * Accept the visitor.
-     */
-    public function accept(EndpointVisitor $visitor)
+    private function getRequestInterceptor(): callable
     {
-        return $visitor->generateAccessTokenForWebhookEndpoint($this->getClient());
+        return function (PsrRequestInterface $request) {
+            $authorizer = new Authorizer($this->client);
+            $accessToken = $authorizer->retrieveAccessTokenForApi();
+
+            return $request->withHeader('Authorization', "Bearer {$accessToken}");
+        };
     }
 }
