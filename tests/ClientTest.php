@@ -36,5 +36,6 @@ it('should set http client success', function () {
         ->setHttpClient($httpClient)
         ->build();
 
+    expect($client->getHttpClient())->toBe($httpClient);
     expect($httpClient)->toBe($client->getTransport()->getPsrClient());
 });

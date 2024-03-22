@@ -44,9 +44,16 @@ class AccessTokenEntity implements AccessTokenEntityInterface
         }
 
         if (is_string($data['expires_at'])) {
-            $expiresAt = Carbon::parse(
-                $data['expires_at']
-            )->toDateTimeImmutable();
+            // Try to parse the expires at date time.
+            try {
+                $expiresAt = Carbon::parse(
+                    $data['expires_at']
+                )->toDateTimeImmutable();
+            } catch (\Exception $e) {
+                throw new \InvalidArgumentException(
+                    'The access token entity data is invalid.'
+                );
+            }
         } elseif ($data['expires_at'] instanceof DateTimeImmutable) {
             $expiresAt = $data['expires_at'];
         } else {
