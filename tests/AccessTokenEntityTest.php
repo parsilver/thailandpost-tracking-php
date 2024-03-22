@@ -1,8 +1,8 @@
 <?php
 
-use Farzai\ThaiPost\Contracts\AccessTokenEntityInterface;
-use Farzai\ThaiPost\AccessTokenEntity;
 use Farzai\Support\Carbon;
+use Farzai\ThaiPost\AccessTokenEntity;
+use Farzai\ThaiPost\Contracts\AccessTokenEntityInterface;
 
 it('should create access token entity successfully', function () {
     $data = [
@@ -32,7 +32,6 @@ it('should create access token entity from array successfully', function () {
     expect($accessToken->getToken())->toBe($data['token']);
     expect($accessToken->expiresAt()->format(Carbon::ATOM))->toBe($data['expires_at']->format(Carbon::ATOM));
 });
-
 
 it('should throw exception if access token entity data is invalid', function () {
     AccessTokenEntity::fromArray([

@@ -31,7 +31,6 @@ it('should subscribe by barcodes success', function () {
     $psrResponse->method('getHeaderLine')->willReturn('application/json');
     $psrResponse->method('getBody')->willReturn($psrStream);
 
-
     $httpClient = $this->createMock(PsrClientInterface::class);
     $httpClient
         ->method('sendRequest')
@@ -63,10 +62,9 @@ it('should refresh access token if token is expired', function () {
                 200,
                 json_encode([
                     'token' => 'valid-token',
-                    'expire' =>
-                        $expireValid = Carbon::now()
-                            ->addHour()
-                            ->format(Carbon::ATOM),
+                    'expire' => $expireValid = Carbon::now()
+                        ->addHour()
+                        ->format(Carbon::ATOM),
                 ]),
                 ['Content-Type' => 'application/json'],
             )
