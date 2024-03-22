@@ -14,8 +14,6 @@ interface AccessTokenRepositoryInterface
 
     /**
      * Save access token.
-     *
-     * @throws \Farzai\ThaiPost\Exceptions\AccessTokenException
      */
     public function saveToken(AccessTokenEntityInterface $accessToken): void;
 

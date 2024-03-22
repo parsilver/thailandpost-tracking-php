@@ -2,9 +2,7 @@
 
 namespace Farzai\ThaiPost;
 
-use Farzai\ThaiPost\Contracts\AccessTokenRepositoryInterface;
 use Farzai\ThaiPost\Contracts\StorageRepositoryInterface;
-use Farzai\ThaiPost\Repositories\AccessTokenRepository;
 use Farzai\ThaiPost\Repositories\FilesystemCacheStorageRepository;
 use Farzai\Transport\TransportBuilder;
 use Psr\Http\Client\ClientInterface;
@@ -24,9 +22,7 @@ class ClientBuilder
 
     private ?ClientInterface $httpClient = null;
 
-    private ?AccessTokenRepositoryInterface $accessTokenRepository = null;
-
-    private ?StorageRepositoryInterface $storageRepository = null;
+    private ?StorageRepositoryInterface $storage = null;
 
     /**
      * Create a new ClientBuilder instance.
@@ -59,21 +55,11 @@ class ClientBuilder
     }
 
     /**
-     * Set access token repository.
-     */
-    public function setAccessTokenRepository(AccessTokenRepositoryInterface $accessTokenRepository): self
-    {
-        $this->accessTokenRepository = $accessTokenRepository;
-
-        return $this;
-    }
-
-    /**
      * Set storage repository.
      */
-    public function setStorageRepository(StorageRepositoryInterface $storageRepository): self
+    public function setStorage(StorageRepositoryInterface $storage): self
     {
-        $this->storageRepository = $storageRepository;
+        $this->storage = $storage;
 
         return $this;
     }
@@ -126,9 +112,7 @@ class ClientBuilder
             config: $config,
             transport: $transport,
             logger: $logger,
-            accessTokenRepository: $this->accessTokenRepository ?? new AccessTokenRepository(
-                storage: $this->storageRepository ?? new FilesystemCacheStorageRepository(),
-            ),
+            storage: $this->storage ?? new FilesystemCacheStorageRepository(),
         );
     }
 }

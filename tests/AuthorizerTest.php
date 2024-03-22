@@ -17,24 +17,24 @@ it('should call generate token success', function () {
         );
 
     $storage = $this->createMock(StorageRepositoryInterface::class);
-    $storage->method('get')->with('access-token')->willReturn(json_encode([
+    $storage->method('get')->with('access-token:api')->willReturn(json_encode([
         'token' => 'this-is-expired-token',
         'expires_at' => Carbon::now()->subHour()->format(Carbon::ATOM),
     ]));
-    $storage->method('create')->with('access-token', json_encode([
+    $storage->method('create')->with('access-token:api', json_encode([
         'token' => 'this-is-valid-token',
         'expires_at' => $expires,
     ]));
 
-    $accessTokenRepository = new AccessTokenRepository($storage);
+    $accessTokenRepository = new AccessTokenRepository('access-token:api', $storage);
 
     $client = ClientBuilder::create()
         ->setCredential('token')
         ->setHttpClient($httpClient)
-        ->setAccessTokenRepository($accessTokenRepository)
+        ->setStorage($storage)
         ->build();
 
-    $authorizer = new Authorizer($client);
+    $authorizer = new Authorizer($client, $accessTokenRepository);
 
     $accessToken = $authorizer->retrieveAccessTokenForApi();
 

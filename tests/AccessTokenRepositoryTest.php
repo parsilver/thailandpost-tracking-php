@@ -13,12 +13,12 @@ it('should save access token to storage successfully', function () {
     ];
 
     $storage = $this->createMock(StorageRepositoryInterface::class);
-    $storage->method('create')->with('access-token', json_encode([
+    $storage->method('create')->with('access-token:api', json_encode([
         'token' => $data['token'],
         'expires_at' => $data['expires_at']->format(Carbon::ATOM),
     ]));
 
-    $accessTokenRepository = new AccessTokenRepository($storage);
+    $accessTokenRepository = new AccessTokenRepository('access-token:api', $storage);
 
     $accessTokenRepository->saveToken(
         new AccessTokenEntity($data['token'], $data['expires_at'])
@@ -29,9 +29,9 @@ it('should save access token to storage successfully', function () {
 
 it('should get access token from storage failed', function () {
     $storage = $this->createMock(StorageRepositoryInterface::class);
-    $storage->method('has')->with('access-token')->willReturn(false);
+    $storage->method('has')->with('access-token:api')->willReturn(false);
 
-    $accessTokenRepository = new AccessTokenRepository($storage);
+    $accessTokenRepository = new AccessTokenRepository('access-token:api', $storage);
 
     $accessToken = $accessTokenRepository->getToken();
 })->throws(\Farzai\ThaiPost\Exceptions\AccessTokenException::class);
@@ -43,13 +43,13 @@ it('should get access token from storage successfully', function () {
     ];
 
     $storage = $this->createMock(StorageRepositoryInterface::class);
-    $storage->method('has')->with('access-token')->willReturn(true);
-    $storage->method('get')->with('access-token')->willReturn(json_encode([
+    $storage->method('has')->with('access-token:api')->willReturn(true);
+    $storage->method('get')->with('access-token:api')->willReturn(json_encode([
         'token' => $data['token'],
         'expires_at' => $data['expires_at']->format(Carbon::ATOM),
     ]));
 
-    $accessTokenRepository = new AccessTokenRepository($storage);
+    $accessTokenRepository = new AccessTokenRepository('access-token:api', $storage);
 
     $accessToken = $accessTokenRepository->getToken();
 
@@ -60,9 +60,9 @@ it('should get access token from storage successfully', function () {
 
 it('should remove access token from storage successfully', function () {
     $storage = $this->createMock(StorageRepositoryInterface::class);
-    $storage->method('delete')->with('access-token');
+    $storage->method('delete')->with('access-token:api');
 
-    $accessTokenRepository = new AccessTokenRepository($storage);
+    $accessTokenRepository = new AccessTokenRepository('access-token:api', $storage);
 
     $accessTokenRepository->forget();
 

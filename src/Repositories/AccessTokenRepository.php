@@ -11,23 +11,12 @@ use Farzai\ThaiPost\Exceptions\AccessTokenException;
 class AccessTokenRepository implements AccessTokenRepositoryInterface
 {
     /**
-     * @var \Farzai\ThaiPost\Contracts\StorageRepositoryInterface
-     */
-    protected $storage;
-
-    /**
-     * @var string
-     */
-    protected $name;
-
-    /**
      * AccessTokenRepository constructor.
      */
-    public function __construct(StorageRepositoryInterface $storage)
-    {
-        $this->name = 'access-token';
-
-        $this->storage = $storage;
+    public function __construct(
+        protected string $name,
+        protected StorageRepositoryInterface $storage,
+    ) {
     }
 
     /**

@@ -12,9 +12,9 @@ use Psr\Http\Message\StreamInterface as PsrStreamInterface;
 it('should track by barcodes success', function () {
     $expectJsonStringResponse = json_encode(['response' => 'success']);
 
-    $storageRepository = $this->createMock(StorageRepositoryInterface::class);
-    $storageRepository->method('has')->willReturn(true);
-    $storageRepository->method('get')->willReturn(
+    $storage = $this->createMock(StorageRepositoryInterface::class);
+    $storage->method('has')->with('access-token:api')->willReturn(true);
+    $storage->method('get')->with('access-token:api')->willReturn(
         json_encode([
             'token' => 'valid-token',
             'expires_at' => Carbon::now()
@@ -37,7 +37,7 @@ it('should track by barcodes success', function () {
     $client = ClientBuilder::create()
         ->setCredential('valid-token')
         ->setHttpClient($httpClient)
-        ->setStorageRepository($storageRepository)
+        ->setStorage($storage)
         ->build();
 
     $api = new ApiEndpoint($client);
@@ -75,9 +75,9 @@ it('should refresh access token if token is expired', function () {
             ),
         );
 
-    $storageRepository = $this->createMock(StorageRepositoryInterface::class);
-    $storageRepository->method('has')->willReturn(true);
-    $storageRepository->method('get')->willReturn(
+    $storage = $this->createMock(StorageRepositoryInterface::class);
+    $storage->method('has')->with('access-token:api')->willReturn(true);
+    $storage->method('get')->with('access-token:api')->willReturn(
         json_encode([
             'token' => 'expired-token',
             'expires_at' => Carbon::now()
@@ -86,11 +86,11 @@ it('should refresh access token if token is expired', function () {
         ])
     );
 
-    $storageRepository
+    $storage
         ->expects($this->once())
         ->method('create')
         ->with(
-            'access-token',
+            'access-token:api',
             json_encode([
                 'token' => 'valid-token',
                 'expires_at' => Carbon::now()
@@ -102,7 +102,7 @@ it('should refresh access token if token is expired', function () {
     $client = ClientBuilder::create()
         ->setCredential('api-token')
         ->setHttpClient($httpClient)
-        ->setStorageRepository($storageRepository)
+        ->setStorage($storage)
         ->build();
 
     $api = new ApiEndpoint($client);

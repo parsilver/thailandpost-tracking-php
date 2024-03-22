@@ -9,14 +9,10 @@ use Farzai\ThaiPost\Exceptions\AccessTokenException;
 
 class Authorizer
 {
-    private Client $client;
-
-    private AccessTokenRepositoryInterface $accessTokenRepository;
-
-    public function __construct(Client $client)
-    {
-        $this->client = $client;
-        $this->accessTokenRepository = $client->getAccessTokenRepository();
+    public function __construct(
+        private Client $client,
+        private AccessTokenRepositoryInterface $accessTokenRepository,
+    ) {
     }
 
     public function retrieveAccessTokenForApi(): AccessTokenEntity
@@ -24,9 +20,14 @@ class Authorizer
         try {
             $token = $this->accessTokenRepository->getToken();
         } catch (AccessTokenException) {
-            $this->accessTokenRepository->saveToken(
-                $token = $this->generateAccessTokenForApiEndpoint()
-            );
+            $response = (new ApiEndpoint($this->client))->generateAccessToken();
+
+            $token = AccessTokenEntity::fromArray([
+                'token' => $response->json('token'),
+                'expires_at' => $response->json('expire'),
+            ]);
+
+            $this->accessTokenRepository->saveToken($token);
         }
 
         return $token;
@@ -37,47 +38,16 @@ class Authorizer
         try {
             $token = $this->accessTokenRepository->getToken();
         } catch (AccessTokenException) {
-            $this->accessTokenRepository->saveToken(
-                $token = $this->generateAccessTokenForWebhookEndpoint()
-            );
+            $response = (new WebhookEndpoint($this->client))->generateAccessToken();
+
+            $token = AccessTokenEntity::fromArray([
+                'token' => $response->json('token'),
+                'expires_at' => $response->json('expire'),
+            ]);
+
+            $this->accessTokenRepository->saveToken($token);
         }
 
         return $token;
-    }
-
-    /**
-     * Generate a new access token for the API endpoint.
-     */
-    private function generateAccessTokenForApiEndpoint(): AccessTokenEntity
-    {
-        $response = (new ApiEndpoint($this->client))->generateAccessToken();
-
-        $token = $response->json('token');
-        $expires = $response->json('expire');
-
-        $accessToken = AccessTokenEntity::fromArray([
-            'token' => $token,
-            'expires_at' => $expires,
-        ]);
-
-        return $accessToken;
-    }
-
-    /**
-     * Generate a new access token for the webhook endpoint.
-     */
-    private function generateAccessTokenForWebhookEndpoint(): AccessTokenEntity
-    {
-        $response = (new WebhookEndpoint($this->client))->generateAccessToken();
-
-        $token = $response->json('token');
-        $expires = $response->json('expire');
-
-        $accessToken = AccessTokenEntity::fromArray([
-            'token' => $token,
-            'expires_at' => $expires,
-        ]);
-
-        return $accessToken;
     }
 }

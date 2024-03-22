@@ -3,7 +3,7 @@
 namespace Farzai\ThaiPost;
 
 use Farzai\Support\Arr;
-use Farzai\ThaiPost\Contracts\AccessTokenRepositoryInterface;
+use Farzai\ThaiPost\Contracts\StorageRepositoryInterface;
 use Farzai\Transport\Transport;
 use Psr\Http\Client\ClientInterface;
 use Psr\Http\Message\RequestInterface as PsrRequestInterface;
@@ -21,7 +21,7 @@ class Client
         private array $config,
         private Transport $transport,
         private LoggerInterface $logger,
-        private AccessTokenRepositoryInterface $accessTokenRepository
+        private StorageRepositoryInterface $storage,
     ) {
     }
 
@@ -61,12 +61,9 @@ class Client
         return $this->transport->getPsrClient();
     }
 
-    /**
-     * Get access token repository.
-     */
-    public function getAccessTokenRepository(): AccessTokenRepositoryInterface
+    public function getStorage(): StorageRepositoryInterface
     {
-        return $this->accessTokenRepository;
+        return $this->storage;
     }
 
     /**

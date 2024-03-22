@@ -24,6 +24,8 @@ interface AccessTokenEntityInterface extends JsonSerializable
 
     /**
      * Convert the entity to an array
+     *
+     * @return array<string, mixed>
      */
     public function toArray(): array;
 }

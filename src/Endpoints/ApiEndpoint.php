@@ -2,21 +2,14 @@
 
 namespace Farzai\ThaiPost\Endpoints;
 
-use Farzai\ThaiPost\Authorizer;
+use Farzai\ThaiPost\Contracts\AccessTokenRepositoryInterface;
 use Farzai\ThaiPost\Exceptions\InvalidApiTokenException;
 use Farzai\Transport\Contracts\ResponseInterface;
 use Psr\Http\Message\RequestInterface as PsrRequestInterface;
+use Farzai\ThaiPost\Repositories\AccessTokenRepository;
 
 class ApiEndpoint extends AbstractEndpoint
 {
-    /**
-     * Get the base uri of the endpoint.
-     */
-    public function getUri(): string
-    {
-        return 'https://trackapi.thailandpost.co.th';
-    }
-
     /**
      * Track by barcode.
      *
@@ -186,10 +179,25 @@ class ApiEndpoint extends AbstractEndpoint
     private function getRequestInterceptor(): callable
     {
         return function (PsrRequestInterface $request) {
-            $authorizer = new Authorizer($this->client);
-            $accessToken = $authorizer->retrieveAccessTokenForApi();
+            $accessToken = $this->getAuthorzier()->retrieveAccessTokenForApi();
 
             return $request->withHeader('Authorization', "Bearer {$accessToken}");
         };
+    }
+
+    /**
+     * Get the base uri of the endpoint.
+     */
+    protected function getUri(): string
+    {
+        return 'https://trackapi.thailandpost.co.th';
+    }
+
+    protected function getAccessTokenRepository(): AccessTokenRepositoryInterface
+    {
+        return new AccessTokenRepository(
+            'access-token:api',
+            $this->getClient()->getStorage(),
+        );
     }
 }

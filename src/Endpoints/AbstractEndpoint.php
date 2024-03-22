@@ -4,15 +4,25 @@ namespace Farzai\ThaiPost\Endpoints;
 
 use Farzai\ThaiPost\Client;
 use Farzai\ThaiPost\PendingRequest;
+use Farzai\ThaiPost\Authorizer;
+use Farzai\ThaiPost\Contracts\AccessTokenRepositoryInterface;
 
 abstract class AbstractEndpoint
 {
     /**
+     * Get the endpoint URI.
+     */
+    abstract protected function getUri(): string;
+
+    /**
+     * Get the access token repository.
+     */
+    abstract protected function getAccessTokenRepository(): AccessTokenRepositoryInterface;
+
+    /**
      * @var \Farzai\ThaiPost\Client
      */
     protected $client;
-
-    abstract public function getUri(): string;
 
     /**
      * Create a new endpoint instance.
@@ -42,5 +52,10 @@ abstract class AbstractEndpoint
         array $options = []
     ): PendingRequest {
         return new PendingRequest($this->client, $method, $path, $options);
+    }
+
+    protected function getAuthorzier(): Authorizer
+    {
+        return new Authorizer($this->client, $this->getAccessTokenRepository());
     }
 }
