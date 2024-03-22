@@ -31,10 +31,10 @@ class WebhookEndpoint extends AbstractEndpoint
      * Subscribe by barcodes.
      *
      * @param  array{
-     *      status: string,
-     *      language: string,
      *      barcode: string|array<string>,
-     *      req_previous_status: bool,
+     *      status?: string,
+     *      language?: string,
+     *      req_previous_status?: bool,
      * }  $params
      *
      * @responseBody {
@@ -81,9 +81,10 @@ class WebhookEndpoint extends AbstractEndpoint
      * Subscribe by receipts.
      *
      * @param  array{
-     *      status: string,
-     *      language: string,
      *      receiptNo: string|array<string>,
+     *      status?: string,
+     *      language?: string,
+     *      req_previous_status?: bool,
      * }  $params
      *
      * @responseBody {
@@ -121,6 +122,61 @@ class WebhookEndpoint extends AbstractEndpoint
                 'receiptNo' => $receipts,
             ]))
             ->asJson()
+            ->acceptJson()
+            ->withInterceptor($this->getRequestInterceptor())
+            ->send();
+    }
+
+    /**
+     * Subscribe by profile.
+     *
+     * @param  array{
+     *      fullName: string,
+     *      telephone: string,
+     *      email?: string,
+     *      nickname?: string,
+     * }  $params
+     *
+     * @responseBody {
+     *      "status": 1,
+     *      "message": "successful",
+     *      "uid": "cmVmY29kZS1tb2NrLTAwMQ==",
+     *      "ref": "E9nTJz"
+     * }
+     */
+    public function subscribeByProfile(array $params): ResponseInterface
+    {
+        return $this->makeRequest('POST', '/post/api/v1/user-register/user-profile')
+            ->withBody($params)
+            ->asJson()
+            ->acceptJson()
+            ->withInterceptor($this->getRequestInterceptor())
+            ->send();
+    }
+
+    /**
+     * Unsubscribe by profile.
+     *
+     * @param  array{
+     *      uid: string,
+     *      ref: string,
+     * }  $params
+     *
+     * @responseBody {
+     *      "status": 1,
+     *      "message": "successful"
+     * }
+     */
+    public function unsubscribeProfile(array $params): ResponseInterface
+    {
+        $uid = $params['uid'] ?? null;
+        $ref = $params['ref'] ?? null;
+
+        if (empty($uid) || empty($ref)) {
+            throw new \InvalidArgumentException('The uid and ref are required.');
+        }
+
+        return $this->makeRequest("DELETE", "/post/api/v1/unsubscribe/{$uid}?ref={$ref}")
             ->acceptJson()
             ->withInterceptor($this->getRequestInterceptor())
             ->send();
