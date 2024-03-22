@@ -15,24 +15,26 @@ abstract class AbstractEndpoint
     abstract protected function getUri(): string;
 
     /**
-     * Get the access token repository.
-     */
-    abstract protected function getAccessTokenRepository(): AccessTokenRepositoryInterface;
-
-    /**
      * @var \Farzai\ThaiPost\Client
      */
-    protected $client;
+    protected Client $client;
+
+    /**
+     * @var \Farzai\ThaiPost\Contracts\AccessTokenRepositoryInterface
+     */
+    protected AccessTokenRepositoryInterface $accessTokenRepository;
 
     /**
      * Create a new endpoint instance.
      */
-    public function __construct(Client $client)
+    public function __construct(Client $client, AccessTokenRepositoryInterface $accessTokenRepository)
     {
         $this->client = clone $client;
 
         $transport = $this->client->getTransport();
         $transport->setUri($this->getUri());
+
+        $this->accessTokenRepository = $accessTokenRepository;
     }
 
     /**
@@ -56,6 +58,6 @@ abstract class AbstractEndpoint
 
     protected function getAuthorzier(): Authorizer
     {
-        return new Authorizer($this->client, $this->getAccessTokenRepository());
+        return new Authorizer($this->client, $this->accessTokenRepository);
     }
 }

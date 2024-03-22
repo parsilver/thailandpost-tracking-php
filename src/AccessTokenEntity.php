@@ -9,22 +9,12 @@ use Farzai\ThaiPost\Contracts\AccessTokenEntityInterface;
 class AccessTokenEntity implements AccessTokenEntityInterface
 {
     /**
-     * @var string
-     */
-    protected $token;
-
-    /**
-     * @var \DateTimeImmutable
-     */
-    protected $expiresAt;
-
-    /**
      * AccessTokenEntity constructor.
      */
-    public function __construct(string $token, DateTimeImmutable $expiresAt)
-    {
-        $this->token = $token;
-        $this->expiresAt = $expiresAt;
+    public function __construct(
+        public readonly string $token,
+        public readonly DateTimeImmutable $expiresAt,
+    ) {
     }
 
     /**

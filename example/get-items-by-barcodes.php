@@ -14,9 +14,9 @@ $client = ClientBuilder::create()
 $api = new ApiEndpoint($client);
 
 $response = $api->getItemsByBarcodes([
-    'status' => 'all',
-    'language' => 'TH',
-    'barcode' => ['EN123456789TH', 'EN987654321TH'],
+    // 'status' => 'all',
+    // 'language' => 'TH',
+    // 'barcode' => ['EN123456789TH', 'EN987654321TH'],
 ]);
 
 if ($response->isSuccessfull()) {

@@ -2,7 +2,7 @@
 
 namespace Farzai\ThaiPost\Endpoints;
 
-use Farzai\ThaiPost\Contracts\AccessTokenRepositoryInterface;
+use Farzai\ThaiPost\Client;
 use Farzai\ThaiPost\Exceptions\InvalidApiTokenException;
 use Farzai\ThaiPost\Repositories\AccessTokenRepository;
 use Farzai\Transport\Contracts\ResponseInterface;
@@ -13,16 +13,11 @@ class ApiEndpoint extends AbstractEndpoint
     /**
      * Track by barcode.
      *
-     *
-     * @requestBody [
-     *    "status" => "all",
-     *    "language" => "TH",
-     *    "barcode" => [
-     *        "ED852942182TH",
-     *        "ED852942183TH",
-     *        "ED852942184TH"
-     *    ]
-     * ]
+     * @param array{
+     *      barcode: string|array<string>,
+     *      status?: string,
+     *      language?: string,
+     * } $params
      *
      * @responseBody {
      *    "response": {
@@ -86,16 +81,11 @@ class ApiEndpoint extends AbstractEndpoint
     /**
      * Track by receipt.
      *
-     *
-     * @requestBody [
-     *    "status" => "all",
-     *    "language" => "TH",
-     *    "receiptNo" => [
-     *        "361101377131",
-     *        "361101377132",
-     *        "361101377133"
-     *    ]
-     * ]
+     * @param array{
+     *      receiptNo: string|array<string>,
+     *      status?: string,
+     *      language?: string,
+     * } $params
      *
      * @responseBody {
      *    "response": {
@@ -193,11 +183,11 @@ class ApiEndpoint extends AbstractEndpoint
         return 'https://trackapi.thailandpost.co.th';
     }
 
-    protected function getAccessTokenRepository(): AccessTokenRepositoryInterface
+    public function __construct(Client $client)
     {
-        return new AccessTokenRepository(
+        parent::__construct($client, new AccessTokenRepository(
             'access-token:api',
-            $this->getClient()->getStorage(),
-        );
+            $client->getStorage(),
+        ));
     }
 }
