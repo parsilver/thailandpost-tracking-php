@@ -4,9 +4,9 @@ namespace Farzai\ThaiPost\Endpoints;
 
 use Farzai\ThaiPost\Contracts\AccessTokenRepositoryInterface;
 use Farzai\ThaiPost\Exceptions\InvalidApiTokenException;
+use Farzai\ThaiPost\Repositories\AccessTokenRepository;
 use Farzai\Transport\Contracts\ResponseInterface;
 use Psr\Http\Message\RequestInterface as PsrRequestInterface;
-use Farzai\ThaiPost\Repositories\AccessTokenRepository;
 
 class ApiEndpoint extends AbstractEndpoint
 {

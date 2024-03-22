@@ -2,10 +2,10 @@
 
 namespace Farzai\ThaiPost\Endpoints;
 
-use Farzai\ThaiPost\Client;
-use Farzai\ThaiPost\PendingRequest;
 use Farzai\ThaiPost\Authorizer;
+use Farzai\ThaiPost\Client;
 use Farzai\ThaiPost\Contracts\AccessTokenRepositoryInterface;
+use Farzai\ThaiPost\PendingRequest;
 
 abstract class AbstractEndpoint
 {
