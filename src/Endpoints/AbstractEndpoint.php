@@ -14,14 +14,8 @@ abstract class AbstractEndpoint
      */
     abstract protected function getUri(): string;
 
-    /**
-     * @var \Farzai\ThaiPost\Client
-     */
     protected Client $client;
 
-    /**
-     * @var \Farzai\ThaiPost\Contracts\AccessTokenRepositoryInterface
-     */
     protected AccessTokenRepositoryInterface $accessTokenRepository;
 
     /**

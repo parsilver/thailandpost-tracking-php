@@ -27,7 +27,6 @@ class WebhookEndpoint extends AbstractEndpoint
             });
     }
 
-
     /**
      * Subscribe by barcodes.
      *
