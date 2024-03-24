@@ -3,48 +3,39 @@
 namespace Farzai\Tests;
 
 use Farzai\ThaiPost\Client;
+use Farzai\ThaiPost\ClientBuilder;
 
-class ClientTest extends TestCase
-{
-    public function test_should_throw_error_if_config_is_empty()
-    {
-        $this->expectException(\InvalidArgumentException::class);
-        $this->expectExceptionMessage('Please specify api_key');
+it('should success if config is valid', function () {
+    $client = ClientBuilder::create()
+        ->setCredential('this-is-token')
+        ->build();
 
-        // Try to create a client with invalid config.
-        $client = new Client([]);
-    }
+    expect($client)->toBeInstanceOf(Client::class);
 
-    public function test_should_throw_error_if_api_key_is_empty()
-    {
-        $this->expectException(\InvalidArgumentException::class);
-        $this->expectExceptionMessage('Please specify api_key');
+    expect($client->getConfig())->toBe([
+        'token' => 'this-is-token',
+    ]);
+});
 
-        // Try to create a client with invalid config.
-        $client = new Client(['api_key' => '']);
-    }
+it('should set logger success', function () {
+    $logger = $this->createMock(\Psr\Log\LoggerInterface::class);
 
-    public function test_should_success_if_config_is_valid()
-    {
-        // Try to create a client with valid config.
-        $client = new Client(['api_key' => '123456789']);
+    $client = ClientBuilder::create()
+        ->setCredential('token')
+        ->setLogger($logger)
+        ->build();
 
-        $this->assertInstanceOf(Client::class, $client);
-    }
+    expect($logger)->toBe($client->getLogger());
+});
 
-    public function test_should_return_rest_api_client()
-    {
-        $client = new Client(['api_key' => '123456789']);
+it('should set http client success', function () {
+    $httpClient = $this->createMock(\Psr\Http\Client\ClientInterface::class);
 
-        $this->assertInstanceOf(Client::class, $client);
-        $this->assertInstanceOf(\GuzzleHttp\Client::class, $client->restApi());
-    }
+    $client = ClientBuilder::create()
+        ->setCredential('token')
+        ->setHttpClient($httpClient)
+        ->build();
 
-    public function test_should_return_webhook_api_client()
-    {
-        $client = new Client(['api_key' => '123456789']);
-
-        $this->assertInstanceOf(Client::class, $client);
-        $this->assertInstanceOf(\GuzzleHttp\Client::class, $client->webhook());
-    }
-}
+    expect($client->getHttpClient())->toBe($httpClient);
+    expect($httpClient)->toBe($client->getTransport()->getPsrClient());
+});

@@ -1,40 +1,47 @@
 {
-    "name": "farzai/thailand-post",
-    "type": "library",
-    "license": "MIT",
-    "authors": [
-        {
-            "name": "PA",
-            "role": "DevOps"
-        }
-    ],
-    "config": {
-        "sort-packages": true
-    },
-    "minimum-stability": "stable",
-    "prefer-stable": true,
-    "require": {
-        "php": "^7.3|^8.0",
-        "ext-json": "*",
-        "guzzlehttp/guzzle": "^7.0",
-        "nyholm/psr7": "^1.4",
-        "nyholm/psr7-server": "^1.0",
-        "psr/http-message": "^1.0"
-    },
-    "require-dev": {
-        "phpunit/phpunit": "^9.4"
-    },
-    "autoload": {
-        "psr-4": {
-            "Farzai\\ThaiPost\\": "src"
-        }
-    },
-    "autoload-dev": {
-        "psr-4": {
-            "Farzai\\Tests\\":  "tests"
-        }
-    },
-    "scripts": {
-        "test": "phpunit"
+  "name": "farzai/thailand-post",
+  "type": "library",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "PA",
+      "role": "DevOps"
     }
+  ],
+  "require": {
+    "php": "^8.2",
+    "farzai/transport": "^1.3.0",
+    "nyholm/psr7": "^1.4",
+    "nyholm/psr7-server": "^1.0",
+    "symfony/cache": "^7.0"
+  },
+  "require-dev": {
+    "pestphp/pest": "^2.15",
+    "laravel/pint": "^1.0",
+    "spatie/ray": "^1.28"
+  },
+  "autoload": {
+    "psr-4": {
+      "Farzai\\ThaiPost\\": "src/"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "Farzai\\ThaiPost\\Tests\\": "tests"
+    }
+  },
+  "scripts": {
+    "test": "vendor/bin/pest",
+    "test-coverage": "vendor/bin/pest --coverage",
+    "format": "vendor/bin/pint --preset psr12"
+  },
+  "config": {
+    "sort-packages": true,
+    "allow-plugins": {
+      "pestphp/pest-plugin": true,
+      "phpstan/extension-installer": true
+    }
+  },
+  "minimum-stability": "dev",
+  "prefer-stable": true
 }
