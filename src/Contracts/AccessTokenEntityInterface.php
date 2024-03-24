@@ -18,11 +18,6 @@ interface AccessTokenEntityInterface extends JsonSerializable
     public function getToken(): string;
 
     /**
-     * Check if the token is expired
-     */
-    public function isExpired(): bool;
-
-    /**
      * Convert the entity to an array
      *
      * @return array<string, mixed>

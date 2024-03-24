@@ -182,6 +182,11 @@ class WebhookEndpoint extends AbstractEndpoint
             ->send();
     }
 
+    /*
+     * Get the request interceptor.
+     *
+     * @return callable<PsrRequestInterface>
+     */
     private function getRequestInterceptor(): callable
     {
         return function (PsrRequestInterface $request) {

@@ -20,6 +20,8 @@ class AccessTokenEntity implements AccessTokenEntityInterface
     /**
      * Create a new access token entity from an array.
      *
+     * @param array{token: string, expires_at: string|DateTimeImmutable} $data
+     *
      * @return static
      *
      * @throws \InvalidArgumentException
