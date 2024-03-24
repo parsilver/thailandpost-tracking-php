@@ -1,21 +1,25 @@
-## Thailand Post Tracking
+# Thailand Post Tracking
+
+![Example CLI](assets/codeimage-snippet.png)
+
+[![Latest Version on Packagist](https://img.shields.io/packagist/v/farzai/thailand-post.svg?style=flat-square)](https://packagist.org/packages/farzai/thailand-post)
+[![Tests](https://img.shields.io/github/actions/workflow/status/parsilver/thailandpost-tracking-php/run-tests.yml?branch=main&label=tests&style=flat-square)](https://github.com/parsilver/thailandpost-tracking-php/actions/workflows/run-tests.yml)
+[![Total Downloads](https://img.shields.io/packagist/dt/farzai/thailand-post.svg?style=flat-square)](https://packagist.org/packages/farzai/thailand-post)
 
 PHP Library สำหรับ tracking พัสดุของไปรษณีย์ไทย
-
 อ้างอิงจากเว็บ APIs ของไปรษณีย์ไทย https://track.thailandpost.co.th/developerGuide
-
 ซึ่ง Library ตัวนี้ทำหน้าที่ครอบ REST APIs ของทางไปรษณีย์ไทยอีกทีนึงเพื่อสะดวกในการใช้งาน
 
-### สิ่งที่ต้องการ
+## สิ่งที่ต้องการ
 
 - PHP 8.2 ขึ้นไป
 - API Key จากไปรษณีย์ไทย (สามารถสร้างได้ที่ https://track.thailandpost.co.th/dashboard)
 
 
-
-
 ## การติดตั้ง
+
 ### ติดตั้งผ่าน Composer
+
 การติดตั้งผ่าน Composer โดยใช้คำสั่งด้านล่าง
 ```
 composer require farzai/thailand-post
