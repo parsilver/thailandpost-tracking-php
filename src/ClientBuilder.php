@@ -98,11 +98,13 @@ class ClientBuilder
 
         $builder = TransportBuilder::make();
 
+        // Transport 2.x builders are immutable, so each call returns a new
+        // instance that must be captured (1.x returned $this, so this is safe).
         if ($this->httpClient) {
-            $builder->setClient($this->httpClient);
+            $builder = $builder->setClient($this->httpClient);
         }
 
-        $builder->setLogger(
+        $builder = $builder->setLogger(
             $logger = $this->logger ?? new NullLogger(),
         );
 

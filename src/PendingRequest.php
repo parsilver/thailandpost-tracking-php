@@ -4,8 +4,8 @@ namespace Farzai\ThaiPost;
 
 use Farzai\ThaiPost\Contracts\RequestInterceptor;
 use Farzai\Transport\Contracts\ResponseInterface;
-use Farzai\Transport\Request;
 use Farzai\Transport\Response;
+use Nyholm\Psr7\Request;
 use Psr\Http\Message\RequestInterface as PsrRequestInterface;
 use Psr\Http\Message\ResponseInterface as PsrResponseInterface;
 
