@@ -46,6 +46,16 @@ class Client
     }
 
     /**
+     * Set transport.
+     */
+    public function setTransport(Transport $transport): self
+    {
+        $this->transport = $transport;
+
+        return $this;
+    }
+
+    /**
      * Get logger.
      */
     public function getLogger(): LoggerInterface

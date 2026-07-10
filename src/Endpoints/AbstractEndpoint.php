@@ -6,6 +6,7 @@ use Farzai\ThaiPost\Authorizer;
 use Farzai\ThaiPost\Client;
 use Farzai\ThaiPost\Contracts\AccessTokenRepositoryInterface;
 use Farzai\ThaiPost\PendingRequest;
+use Farzai\Transport\Transport;
 
 abstract class AbstractEndpoint
 {
@@ -25,8 +26,12 @@ abstract class AbstractEndpoint
     {
         $this->client = clone $client;
 
+        // Transport 2.x uses an immutable config, so rebuild the transport with
+        // the endpoint's base URI instead of mutating it in place.
         $transport = $this->client->getTransport();
-        $transport->setUri($this->getUri());
+        $this->client->setTransport(
+            new Transport($transport->getConfig()->withBaseUri($this->getUri()))
+        );
 
         $this->accessTokenRepository = $accessTokenRepository;
     }
